@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: ajobanpu.azurecr.io/app:latest
+        image: container-registry/app:latest
 ---
 kind: Service
 apiVersion: v1
