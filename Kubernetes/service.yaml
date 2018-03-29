@@ -1,0 +1,33 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: service
+  labels:
+    app: service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service
+  template:
+    metadata:
+      labels:
+        app: service
+    spec:
+      containers:
+      - name: service
+        image: container-registry/service:latest
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service
+  labels:
+    app: service
+spec:
+  type: LoadBalancer
+  selector:
+    app: service
+  ports:
+  - port: 80
+    targetPort: 4201
