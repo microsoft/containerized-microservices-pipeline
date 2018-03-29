@@ -35,8 +35,8 @@ spec:
   - port: 80
     targetPort: 4201
 ---
-apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v1
 metadata:
   name: service
   namespace: default
