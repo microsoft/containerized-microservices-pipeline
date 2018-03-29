@@ -17,6 +17,9 @@ spec:
       containers:
       - name: service
         image: container-registry/service:latest
+        resources:
+         requests:
+          cpu: "500m" # X/1000 of a CPU
 ---
 kind: Service
 apiVersion: v1
@@ -31,3 +34,17 @@ spec:
   ports:
   - port: 80
     targetPort: 4201
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: service
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: service
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
