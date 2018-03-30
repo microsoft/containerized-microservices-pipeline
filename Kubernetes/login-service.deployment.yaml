@@ -1,0 +1,22 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: login-service
+  labels:
+    app: login-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: login-service
+  template:
+    metadata:
+      labels:
+        app: login-service
+    spec:
+      containers:
+      - name: login-service
+        image: container-registry/service:latest
+        resources:
+         requests:
+          cpu: "500m" # X/1000 of a CPU
