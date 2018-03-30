@@ -17,17 +17,3 @@ spec:
       containers:
       - name: app
         image: container-registry/app:latest
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: app
-  labels:
-    app: app
-spec:
-  type: LoadBalancer
-  selector:
-    app: app
-  ports:
-  - port: 80
-    targetPort: 4200
