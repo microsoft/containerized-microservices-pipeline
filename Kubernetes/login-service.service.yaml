@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: login-service
+  labels:
+    app: login-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: login-service
+  ports:
+  - port: 80
+    targetPort: 4201
