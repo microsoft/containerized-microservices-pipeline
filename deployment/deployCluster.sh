@@ -16,7 +16,7 @@ az group create --name=$RESOURCE_GROUP --location=$LOCATION
 ## create service principal
 SUBSCRIPTION_ID="" # Add Azure Subscription ID
 SERVICE_PRINCIPAL_NAME=$CLUSTER_NAME
-SERVICE_PRINCIPAL_PASSWORD=`date | md5 | head -c10; echo`
+SERVICE_PRINCIPAL_PASSWORD=`uuidgen``date | md5 | head -c10; echo`
 az ad sp delete --id http://$SERVICE_PRINCIPAL_NAME
 az ad sp create-for-rbac --name $SERVICE_PRINCIPAL_NAME --role="Contributor" --scopes="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$CLUSTER_NAME" --password $SERVICE_PRINCIPAL_PASSWORD -o json
 
