@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "containerized-microservices-pipeline-app.fullname" . }}
+  labels:
+    app: {{ template "containerized-microservices-pipeline-app.name" . }}
+    chart: {{ template "containerized-microservices-pipeline-app.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "containerized-microservices-pipeline-app.name" . }}
+    release: {{ .Release.Name }}
