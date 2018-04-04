@@ -22,5 +22,6 @@ spec:
       containers:
       - name: {{ .Chart.Name }}
         image: {{ .Values.app.image.repository }}/{{ template "containerized-microservices-pipeline-app.name" . }}:{{ .Values.app.image.tag }}
+        imagePullPolicy: {{ .Values.app.image.pullPolicy }}	
       imagePullSecrets:
-      - name: wesyaoacr-credentials
+      - name: {{ .Values.app.imagePullSecrets }}

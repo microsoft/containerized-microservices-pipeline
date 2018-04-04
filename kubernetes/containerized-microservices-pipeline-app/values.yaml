@@ -6,9 +6,10 @@
 app:
   replicaCount: 2
   image:
-    repository: wesyaoacr.azurecr.io
-    tag: latest
-    pullPolicy: IfNotPresent
+    repository: # ACR Login Server
+    tag: canary
+    pullPolicy: Always
+  imagePullSecrets: # Name of ACR Credential Secret
 
 service:
   type: ClusterIP
