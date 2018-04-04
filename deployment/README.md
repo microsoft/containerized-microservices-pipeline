@@ -50,6 +50,6 @@ brew install kubectl
 
 ### Deploy Azure Container Registry
 1. In ```deployContainerRegistry.sh```, set ```CONTAINER_REGISTRY_NAME``` to be your desired registry name
-2. Set ```RESOURCE_GROUP``` to name your resource group
+2. Set ```RESOURCE_GROUP``` to the name of a separate resource group
 3. (optional) Set ```SKU``` to be the type of ACR you would like to use
 4. run ```sh deployContainerRegistry.sh```
