@@ -9,11 +9,14 @@ app:
     repository: # ACR Login Server
     tag: canary
     pullPolicy: Always
+  port:
+    containerPort: 80
   imagePullSecrets: # Name of ACR Credential Secret
 
 service:
   type: ClusterIP
   port: 80
+  targetPort: 80
 
 ingress:
   enabled: false
