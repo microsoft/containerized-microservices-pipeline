@@ -13,4 +13,4 @@
 - Run `kubectl create -f login-service.service.yaml`.
 - Edit line 19 of `login-service.deployment.yaml`. Replace `container-registry` with the value of your container registry.
 - Run `kubectl create -f login-service.deployment.yaml`.
-- Run `kubectl create -f login-horizontalPodAutoscaler.yaml`.
+- Run `kubectl create -f login-service.horizontalPodAutoscaler.yaml`.
