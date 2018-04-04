@@ -31,8 +31,6 @@ brew install kubectl
 
 ### Deploy Cluster
 1. Get your azure subscription id by running ```az account list```
-2. In ```deployCluster.sh```, set ```CLUSTER_NAME``` to the desired name of your cluster
-3. Set ```SUBSCRIPTION_ID``` to your proper azure subscription id 
 ```
   "environmentName": "EnvName",
   "id": "2aXXX-XXXX-XXXX-XXXX-XXXXX", //subscription id
@@ -46,6 +44,8 @@ brew install kubectl
   }
 }
 ```
+2. In ```deployCluster.sh```, set ```CLUSTER_NAME``` to the desired name of your cluster
+3. Set ```SUBSCRIPTION_ID``` to your proper azure subscription id 
 4. Run ```sh deployCluster.sh```
 
 ### Deploy Azure Container Registry
