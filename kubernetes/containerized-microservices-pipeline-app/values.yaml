@@ -2,12 +2,13 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
 
-image:
-  repository: nginx
-  tag: stable
-  pullPolicy: IfNotPresent
+app:
+  replicaCount: 2
+  image:
+    repository: wesyaoacr.azurecr.io
+    tag: latest
+    pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
