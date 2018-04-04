@@ -30,8 +30,9 @@ brew install kubectl
 #### Install on Windows
 
 ### Deploy Cluster
-1. Set ```CLUSTER_NAME``` to the name of your cluster
-2. Get your azure subscription id:
+1. Get your azure subscription id by running ```az account list```
+2. In ```sh deployCluster.sh```, set ```CLUSTER_NAME``` to the desired name of your cluster
+3. Set ```SUBSCRIPTION_ID``` to your proper azure subscription id 
 ```
   "environmentName": "EnvName",
   "id": "2aXXX-XXXX-XXXX-XXXX-XXXXX", //subscription id
@@ -45,11 +46,10 @@ brew install kubectl
   }
 }
 ```
-3. Set ```SUBSCRIPTION_ID``` to your subscription id
-4. run ```sh deployCluster.sh```
+4. Run ```sh deployCluster.sh```
 
 ### Deploy Azure Container Registry
-1. Set ```CONTAINER_REGISTRY_NAME``` to be your registry name
+1. In ```sh deployContainerRegistry.sh```, set ```CONTAINER_REGISTRY_NAME``` to be your desired registry name
 2. Set ```RESOURCE_GROUP``` to name your resource group
 3. (optional) Set ```SKU``` to be the type of ACR you would like to use
 4. run ```sh deployContainerRegistry.sh```
