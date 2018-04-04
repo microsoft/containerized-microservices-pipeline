@@ -41,3 +41,13 @@ kubectl version
 ## Kube Cluster
 kubectl cluster-info
 
+## ------
+## Helm
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+helm init --upgrade
+
+## ------
+## Traefik ingress controller
+helm install stable/traefik --name traefik-$CLUSTER_NAME --namespace kube-system
