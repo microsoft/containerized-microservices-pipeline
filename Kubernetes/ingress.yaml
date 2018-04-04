@@ -11,3 +11,7 @@ spec:
       - backend:
           serviceName: app-service
           servicePort: 80
+      - path: /login-api
+        backend:
+          serviceName: login-service-service
+          servicePort: 80
