@@ -2,39 +2,51 @@
 
 set -x
 
-CLUSTER_NAME="" # Add Desired Cluster Name
-LOCATION="" # Specify Location of Cluster
-SUBSCRIPTION_ID="" # Add Azure Subscription ID
+## -------
+# Cluster variables
+CLUSTER_NAME=microservices-k8-cluster # Add Desired Cluster Name
+AZURE_CONTAINER_REGISTRY_ID="" # Azure Container Registry ID
+K8_DEPLOYMENT_KEYVAULT_NAME=microservices-deploy-kv # Name of KeyVault provisioned in createMtSvc.sh
+
+## -------
+# Import global variables
+. ./globalVariables.prod.sh
+
+## -------
+# Login to Azure and set the Azure subscription for this script to use
+echo ........ Logging into Azure
+az login
+az account set --subscription $AZURE_SUBSCRIPTION_ID
 
 ## -------
 ## create resource group
 RESOURCE_GROUP=$CLUSTER_NAME
 az group delete --name=$RESOURCE_GROUP --yes
-az group create --name=$RESOURCE_GROUP --location=$LOCATION
+az group create --name=$RESOURCE_GROUP --location=$AZURE_LOCATION
 
 ## -------
 ## create service principal
 ACS_SERVICE_PRINCIPAL_NAME=$CLUSTER_NAME
 az ad sp delete --id http://$ACS_SERVICE_PRINCIPAL_NAME
-ACS_SERVICE_PRINCIPAL_PASSWORD=`az ad sp create-for-rbac --name $ACS_SERVICE_PRINCIPAL_NAME --role="Contributor" --scopes="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$CLUSTER_NAME" --query password -o tsv`
+ACS_SERVICE_PRINCIPAL_PASSWORD=`az ad sp create-for-rbac --name $ACS_SERVICE_PRINCIPAL_NAME --role="Contributor" --scopes="/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP" --query password -o tsv`
 
-sleep 5 # Azure CLI bug needs delay so SP can propegate
+sleep 10 # Azure CLI bug needs delay so SP can propegate
 
 ## -------
-## create key vault for passing secrets down to the services
-KEYVAULT_NAME="$CLUSTER_NAME"-mt-deployment
-az keyvault delete --name $KEYVAULT_NAME --resource-group $RESOURCE_GROUP
-az keyvault create --name $KEYVAULT_NAME --resource-group $RESOURCE_GROUP --location $LOCATION
+# Assign the ACS Service Principal the contributor role on the container registry
+ACS_SERVICE_PRINCIPAL_ID=$(az ad sp show --id http://$ACS_SERVICE_PRINCIPAL_NAME --query appId --output tsv)
+az role assignment create --assignee $ACS_SERVICE_PRINCIPAL_ID --scope $AZURE_CONTAINER_REGISTRY_ID --role contributor
 
+## -------
 # SP running in K8s can only read the secret
-az keyvault set-policy --secret-permissions get --resource-group $RESOURCE_GROUP --name $KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME
+az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME
 
 ## -------
 ## create kubernetes cluster
 DNS_PREFIX=$CLUSTER_NAME
-az acs create --orchestrator-type=kubernetes --generate-ssh-keys --resource-group $RESOURCE_GROUP --name=$CLUSTER_NAME --dns-prefix=$DNS_PREFIX --service-principal http://$ACS_SERVICE_PRINCIPAL_NAME --client-secret $ACS_SERVICE_PRINCIPAL_PASSWORD --agent-vm-size Standard_DS2_v2 --master-vm-size Standard_DS2_v2 
+az acs create --orchestrator-type=kubernetes --generate-ssh-keys --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --dns-prefix $DNS_PREFIX --service-principal http://$ACS_SERVICE_PRINCIPAL_NAME --client-secret $ACS_SERVICE_PRINCIPAL_PASSWORD --agent-vm-size Standard_DS2_v2 --master-vm-size Standard_DS2_v2 
 
-sleep 5 #  Azure CLI bug needs cluster provisioning to complete before requestion credentials for kubectl
+sleep 60 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
 
 ## -------
 ## Download Kubernetes Credentials
@@ -58,3 +70,8 @@ helm init --upgrade
 ## ------
 ## Traefik ingress controller
 helm install stable/traefik --name traefik-$CLUSTER_NAME --namespace kube-system
+
+## -------
+# ACS cluster deployment and setup complete
+echo ........ "ACS cluster deployment and setup complete. All resources deployed to the following resource group."
+echo RESOURCE_GROUP=$RESOURCE_GROUP
