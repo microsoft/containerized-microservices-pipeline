@@ -1,23 +1,24 @@
 #!/bin/bash
 
+########################################
+# Script assumes it is being executed by inception.sh and the Azure Subscription has been set
+# The following global variables need to be defined for this script to run successfully
+# COMMON_RESOURCE_GROUP
+# AZURE_LOCATION
+# PROJECT_NAME
+########################################
+
 set -x
 
-CONTAINER_REGISTRY_NAME=""
-LOCATION=westus
-
-SUBSCRIPTION_ID=""
-
-## -------
-## set subscription
-az account set -s $SUBSCRIPTION_ID
-
-## -------
-## create resource group
-RESOURCE_GROUP=""
-az group delete --name=$RESOURCE_GROUP --yes
-az group create --name=$RESOURCE_GROUP --location=$LOCATION
+AZURE_CONTAINER_REGISTRY_NAME=acr$PROJECT_NAME$AZURE_LOCATION
+SKU=Basic # Basic, Premium, Standard
 
 ## -------
 ## create acr
-SKU="Standard" # Basic, Classic, Premium, Standard
-az acr create -n $CONTAINER_REGISTRY_NAME -g $RESOURCE_GROUP --sku $SKU -l $LOCATION
+az acr delete -n $AZURE_CONTAINER_REGISTRY_NAME
+az acr create -n $AZURE_CONTAINER_REGISTRY_NAME -g $COMMON_RESOURCE_GROUP --sku $SKU -l $AZURE_LOCATION --admin-enabled true
+
+## -------
+# Obtain the full registry ID for subsequent command args
+AZURE_CONTAINER_REGISTRY_ID=$(az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query id --output tsv)
+export AZURE_CONTAINER_REGISTRY_ID
