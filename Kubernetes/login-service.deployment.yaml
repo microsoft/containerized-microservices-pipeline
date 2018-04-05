@@ -20,3 +20,34 @@ spec:
         resources:
          requests:
           cpu: "500m" # X/1000 of a CPU
+      initContainers:
+      - name: keyvault-agent
+        image: ivanshaporov/test # will be in ACR
+        env:
+        - name: VAULT_BASE_URL
+          value: https://ivan-bny-mt-deployment.vault.azure.net  # will be {{ .Values... }} in Helm charts
+        - name: SERVICE_PRINCIPLE_FILE_PATH
+          value: /host/azure.json
+        - name: SECRETS_FOLDER
+          value: /secrets
+        - name: SECRETS_KEYS
+          value: mt-aad-password
+
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+
+        - name: host-sp
+          mountPath: /host/azure.json
+          readOnly: true
+      volumes:
+      - name: secrets
+        emptyDir:
+          # we want the secrets to reside only in-memory
+          medium: Memory
+
+      - name: host-sp
+        hostPath:
+          # this file contains the cluster service-principal, it exists on every node by default
+          path: /etc/kubernetes/azure.json
+          #type: File # commented out because current cubctl doesn't understand it.
