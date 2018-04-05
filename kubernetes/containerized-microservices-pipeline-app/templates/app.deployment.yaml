@@ -1,0 +1,29 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ template "containerized-microservices-pipeline-app.fullname" . }}
+  labels:
+    app: {{ template "containerized-microservices-pipeline-app.name" . }}
+    chart: {{ template "containerized-microservices-pipeline-app.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "containerized-microservices-pipeline-app.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "containerized-microservices-pipeline-app.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.app.image.repository }}/{{ template "containerized-microservices-pipeline-app.name" . }}:{{ .Values.app.image.tag }}
+        imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.app.port.containerPort }}
+      imagePullSecrets:
+      - name: {{ .Values.app.imagePullSecrets }}

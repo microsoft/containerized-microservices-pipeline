@@ -1,13 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: login-service
+  name: login-service-service
   labels:
-    app: login-service
+    app: login-service-app
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
-    app: login-service
+    app: login-service-app
   ports:
-  - port: 80
+  - name: http
+    port: 80
     targetPort: 4201
