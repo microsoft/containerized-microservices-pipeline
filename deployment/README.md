@@ -1,6 +1,6 @@
 # Deployment Scripts
 
-## Prerequisites
+## Development Prerequisites
 
 ### Homebrew
 [How to install homebrew](https://brew.sh/)
@@ -27,29 +27,44 @@ Download and run [AZ Installer](https://aka.ms/InstallAzureCliWindows)
 brew install kubectl
 ```
 
-#### Install on Windows
-
-### Deploy Cluster
-1. Get your azure subscription id by running ```az account list```
+#### Install on Windows with PowerShell
 ```
-  "environmentName": "EnvName",
-  "id": "2aXXX-XXXX-XXXX-XXXX-XXXXX", //subscription id
-  "isDefault": true,
-  "name": "SubName",
-  "state": "Enabled",
-  "tenantId": "8mXXX-XXXX-XXXXX",
-  "user": {
-    "name": "me@me.com",
-    "type": "user"
-  }
-}
+Install-Script -Name install-kubectl -Scope CurrentUser -Force     
+install-kubectl.ps1 [-DownloadLocation <path>]
 ```
-2. In ```deployCluster.sh```, set ```CLUSTER_NAME``` to the desired name of your cluster
-3. Set ```SUBSCRIPTION_ID``` to your proper azure subscription id 
-4. Run ```sh deployCluster.sh```
+## Azure Resource & k8 Cluster Deployment
 
-### Deploy Azure Container Registry
-1. In ```deployContainerRegistry.sh```, set ```CONTAINER_REGISTRY_NAME``` to be your desired registry name
-2. Set ```RESOURCE_GROUP``` to the name of a separate resource group
-3. (optional) Set ```SKU``` to be the type of ACR you would like to use
-4. run ```sh deployContainerRegistry.sh```
+### Create initial common Azure resources
+These resources should only be created one time per subscription and common resources used by all micro-services.
+
+#### Configure environment variables
+Open /deployment/globalVariables.sh and enter values for the deployment.
+
+#### Execute inception.sh
+Open a bash shell and execute inception.sh
+```
+cd /deployment
+chmod 775 *
+./inception.sh
+```
+
+Copy the values for the following variables from the script output, you will need these in deployCluster.sh:
+
+```
+K8_DEPLOYMENT_KEYVAULT_NAME
+AZURE_CONTAINER_REGISTRY_ID
+```
+
+#### Edit deployCluster.sh
+Using the values from the output of inception.sh captured above, fill out the following values:
+```
+AZURE_CONTAINER_REGISTRY_ID="/subscriptions/<youridhere>resourceGroups/microservices-westus-resources/providers/Microsoft.ContainerRegistry/registries/acrmicroserviceswestus" # Azure Container Registry ID
+K8_DEPLOYMENT_KEYVAULT_NAME=microservices-deploy-kv
+```
+
+#### Execute deployCluster.sh
+Open a bash shell and execute deployCluster.sh
+```
+cd /deployment
+./deployCluster.sh
+```

@@ -1,17 +1,19 @@
 #!/bin/bash
 
+########################################
+# Script assumes it is being executed by inception.sh and the Azure Subscription has been set
+# The following global variables need to be defined for this script to run successfully
+# COMMON_RESOURCE_GROUP
+# AZURE_LOCATION
+# PROJECT_NAME
+########################################
+
 set -x
 
-SUBSCRIPTION_ID="" # Set subscription ID.
-CLUSTER_NAME="" # Set Cluster Name.
-LOCATION=westus # Specify Location of Cluster.
+INSIGHTS_NAME="$PROJECT_NAME"-app-insights
 
-RESOURCE_GROUP=$CLUSTER_NAME
-INSIGHTS_NAME="$CLUSTER_NAME"-app-insights-front-end
-
-az account set -s $SUBSCRIPTION_ID
-az resource delete --resource-group $RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components
-az resource create --resource-group $RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components --properties '{ "kind": "Node.JS", "Application_Type": "Node.JS", "location": "'"$LOCATION"'"}'
+az resource delete --resource-group $COMMON_RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components
+az resource create --resource-group $COMMON_RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components --properties '{ "kind": "Node.JS", "Application_Type": "Node.JS", "location": "'"$AZURE_LOCATION"'"}'
 
 echo "Use this key in the application settings for Front End."
-az resource show --resource-group $RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components | grep InstrumentationKey
+az resource show --resource-group $COMMON_RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components | grep InstrumentationKey
