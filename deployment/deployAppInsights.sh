@@ -16,4 +16,4 @@ az resource delete --resource-group $COMMON_RESOURCE_GROUP --name=$INSIGHTS_NAME
 az resource create --resource-group $COMMON_RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components --properties '{ "kind": "Node.JS", "Application_Type": "Node.JS", "location": "'"$AZURE_LOCATION"'"}'
 
 echo "Use this key in the application settings for Front End."
-az resource show --resource-group $COMMON_RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components | grep InstrumentationKey
+az resource show --resource-group $COMMON_RESOURCE_GROUP --name=$INSIGHTS_NAME --resource-type microsoft.insights/components --query properties.InstrumentationKey -o tsv

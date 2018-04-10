@@ -5,7 +5,7 @@ set -x
 ## -------
 # Cluster variables
 CLUSTER_NAME=microservices-k8-cluster # Add Desired Cluster Name
-AZURE_CONTAINER_REGISTRY_ID="" # Azure Container Registry ID
+AZURE_CONTAINER_REGISTRY_NAME=""  # Azure Container Registry name
 K8_DEPLOYMENT_KEYVAULT_NAME=microservices-deploy-kv # Name of KeyVault provisioned in createMtSvc.sh
 
 ## -------
@@ -35,6 +35,7 @@ sleep 10 # Azure CLI bug needs delay so SP can propegate
 ## -------
 # Assign the ACS Service Principal the contributor role on the container registry
 ACS_SERVICE_PRINCIPAL_ID=$(az ad sp show --id http://$ACS_SERVICE_PRINCIPAL_NAME --query appId --output tsv)
+AZURE_CONTAINER_REGISTRY_ID=$(az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query id --output tsv)
 az role assignment create --assignee $ACS_SERVICE_PRINCIPAL_ID --scope $AZURE_CONTAINER_REGISTRY_ID --role contributor
 
 ## -------
@@ -46,7 +47,21 @@ az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURC
 DNS_PREFIX=$CLUSTER_NAME
 az acs create --orchestrator-type=kubernetes --generate-ssh-keys --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --dns-prefix $DNS_PREFIX --service-principal http://$ACS_SERVICE_PRINCIPAL_NAME --client-secret $ACS_SERVICE_PRINCIPAL_PASSWORD --agent-vm-size Standard_DS2_v2 --master-vm-size Standard_DS2_v2 
 
+ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
+ACS_EMAIL=`az account show --query user.name -o tsv`
+
+kubectl create secret docker-registry acr-credentials --docker-server $ACR_URL --docker-email $ACS_EMAIL --docker-username=$ACS_SERVICE_PRINCIPAL_ID --docker-password $ACS_SERVICE_PRINCIPAL_PASSWORD
+
 sleep 60 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
+
+## -------
+# # build and push hexadite to ACR
+git clone https://github.com/Hexadite/acs-keyvault-agent
+cd acs-keyvault-agent
+docker build . -t ${ACR_URL}/hexadite:latest
+docker login -u $ACR_USERNAME -p $ACR_PASSWORD $ACR_URL
+docker push ${ACR_URL}/hexadite:latest
+cd ..
 
 ## -------
 ## Download Kubernetes Credentials
