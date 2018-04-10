@@ -42,7 +42,11 @@ echo ........ Creating App Insights
 ## -------
 # Create OMS Workspace
 echo ........ Creating OMS Workspace
-az group deployment create --debug --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS" --template-file logAnalyticsOms.json --parameters @logAnalyticsOms.parameters.json
+K8_DEPLOYMENT_DIAGSA_NAME=elhalperdiag
+az storage account delete --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --yes
+az storage account create --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --location eastus --sku Standard_LRS
+az group deployment delete --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS"
+az group deployment create --debug --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS" --template-file logAnalyticsOms.json
 
 ## -------
 # Create the middle tier service

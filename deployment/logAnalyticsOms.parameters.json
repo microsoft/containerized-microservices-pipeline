@@ -6,7 +6,7 @@
       "value": "Free"
     },
     "workspaceName": {
-      "value": "LogAnalyticsWorkspace"
+      "value": "elhalperLogAnalyticsWS"
     },
     "solutionType": {
       "value": "Container Monitoring Solution"
