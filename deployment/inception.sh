@@ -40,6 +40,11 @@ echo ........ Creating App Insights
 . ./deployAppInsights.sh
 
 ## -------
+# Create OMS Workspace
+echo ........ Creating OMS Workspace
+az group deployment create --debug --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS" --template-file logAnalyticsOms.json --parameters @logAnalyticsOms.parameters.json
+
+## -------
 # Create the middle tier service
 echo ........ Creating middle tier services
 . ./createMtSvc.sh
