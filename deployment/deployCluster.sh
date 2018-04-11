@@ -48,12 +48,13 @@ az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURC
 DNS_PREFIX=$CLUSTER_NAME
 az acs create --orchestrator-type=kubernetes --generate-ssh-keys --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --dns-prefix $DNS_PREFIX --service-principal http://$ACS_SERVICE_PRINCIPAL_NAME --client-secret $ACS_SERVICE_PRINCIPAL_PASSWORD --agent-vm-size Standard_DS2_v2 --master-vm-size Standard_DS2_v2 
 
+echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
+sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
+
 ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
 ACS_EMAIL=`az account show --query user.name -o tsv`
 
 kubectl create secret docker-registry acr-credentials --docker-server $ACR_URL --docker-email $ACS_EMAIL --docker-username=$ACS_SERVICE_PRINCIPAL_ID --docker-password $ACS_SERVICE_PRINCIPAL_PASSWORD
-
-sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
 
 ## -------
 # # build and push hexadite to ACR
