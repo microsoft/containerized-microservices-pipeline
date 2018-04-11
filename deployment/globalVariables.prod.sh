@@ -6,7 +6,7 @@ set -x
 # Global variables for the environment
 AZURE_SUBSCRIPTION_ID=AzureSubscriptionIdGoesHere # Replace value with Azure Subscription ID to use
 export AZURE_SUBSCRIPTION_ID
-AZURE_LOCATION=westus
+AZURE_LOCATION=eastus
 export AZURE_LOCATION
 PROJECT_NAME=microservices
 export PROJECT_NAME 

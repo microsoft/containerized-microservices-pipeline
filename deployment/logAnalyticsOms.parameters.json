@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serviceTier": {
+      "value": "PerNode"
+    },
+    "workspaceName": {
+      "value": "microservices-eastus-ws"
+    },
+    "location": {
+      "value": "East US"
+    },
+    "applicationDiagnosticsStorageAccountName": {
+      "value": "projectdiagsaname"
+    },
+    "applicationDiagnosticsStorageAccountResourceGroup": {
+      "value": "microservices-eastus-resources"
+    }
+  }
+}
