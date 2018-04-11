@@ -86,6 +86,12 @@ helm init --upgrade
 ## Traefik ingress controller
 helm install stable/traefik --name traefik-$CLUSTER_NAME --namespace kube-system
 
+## ------
+## OMS Agent
+WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsoft.OperationalInsights/workspaces --name containerized-loganalyticsWS | grep customerId | sed -e 's/.*://')
+#helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=$KEYVAL stable/msoms
+# TODO: populate $KEYVAL parameter
+
 ## -------
 # ACS cluster deployment and setup complete
 echo ........ "ACS cluster deployment and setup complete. All resources deployed to the following resource group."
