@@ -7,6 +7,7 @@ set -x
 CLUSTER_NAME=microservices-k8-cluster # Add Desired Cluster Name
 AZURE_CONTAINER_REGISTRY_ID="" # Azure Container Registry ID
 K8_DEPLOYMENT_KEYVAULT_NAME=microservices-deploy-kv # Name of KeyVault provisioned in createMtSvc.sh
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME=microservices-trafficmgr # Name of the profile of Azure Traffic Manager
 
 ## -------
 # Import global variables
@@ -46,7 +47,7 @@ az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURC
 DNS_PREFIX=$CLUSTER_NAME
 az acs create --orchestrator-type=kubernetes --generate-ssh-keys --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --dns-prefix $DNS_PREFIX --service-principal http://$ACS_SERVICE_PRINCIPAL_NAME --client-secret $ACS_SERVICE_PRINCIPAL_PASSWORD --agent-vm-size Standard_DS2_v2 --master-vm-size Standard_DS2_v2 
 
-sleep 60 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
+sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
 
 ## -------
 ## Download Kubernetes Credentials
@@ -70,6 +71,11 @@ helm init --upgrade
 ## ------
 ## Traefik ingress controller
 helm install stable/traefik --name traefik-$CLUSTER_NAME --namespace kube-system
+
+## -------
+## create Azure Traffic Manager endpoint for this cluster
+AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}mgmt'].dnsSettings.fqdn" -o tsv)
+az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
 
 ## -------
 # ACS cluster deployment and setup complete
