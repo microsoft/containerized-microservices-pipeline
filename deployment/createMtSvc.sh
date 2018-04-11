@@ -36,11 +36,9 @@ az sql server firewall-rule create --resource-group $COMMON_RESOURCE_GROUP --ser
 
 az keyvault secret set --name sql-password --vault-name $MT_KEYVAULT_NAME --description "used by middle tier to login to SQL" --value $SQL_ADMIN_PASSWORD --query id
 
-CONNECTION_STRING=`az sql db show-connection-string --client ado.net --auth-type SqlPassword --name $PROJECT_NAME --server $SQL_SERVER_NAME`
-CONNECTION_STRING=${CONNECTION_STRING/<username>/$SQL_ADMIN}
-
-echo "add this connection string to MT config"
-echo $CONNECTION_STRING
+MT_CONNECTION_STRING=`az sql db show-connection-string --client ado.net --auth-type SqlPassword --name $SQL_DB_NAME --server $SQL_SERVER_NAME`
+MT_CONNECTION_STRING=${MT_CONNECTION_STRING/<username>/$SQL_ADMIN}
+export MT_CONNECTION_STRING
 
 # create token signing key
 TOKEN_SIGN_KEY=`uuidgen`
