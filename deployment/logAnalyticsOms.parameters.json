@@ -12,7 +12,7 @@
       "value": "East US"
     },
     "applicationDiagnosticsStorageAccountName": {
-      "value": "elhalperdiag"
+      "value": "projectdiagsaname"
     },
     "applicationDiagnosticsStorageAccountResourceGroup": {
       "value": "microservices-eastus-resources"

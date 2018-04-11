@@ -4,7 +4,7 @@ set -x
 
 ## -------
 # Global variables for the environment
-AZURE_SUBSCRIPTION_ID=4bfa739e-0d8c-437e-9302-e3da21c66828
+AZURE_SUBSCRIPTION_ID=AzureSubscriptionIdGoesHere # Replace value with Azure Subscription ID to use
 export AZURE_SUBSCRIPTION_ID
 AZURE_LOCATION=eastus
 export AZURE_LOCATION
