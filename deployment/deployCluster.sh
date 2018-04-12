@@ -125,7 +125,7 @@ WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsof
 
 ## -------
 ## create Azure Traffic Manager endpoint for this cluster
-AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}mgmt'].dnsSettings.fqdn" -o tsv)
+AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}'].dnsSettings.fqdn" -o tsv)
 az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
 
 ## -------
