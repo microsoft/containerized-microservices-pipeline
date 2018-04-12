@@ -16,7 +16,7 @@ AZURE_TRAFFIC_MANAGER_PROFILE_NAME=microservices-trafficmgr # Name of the profil
 ## -------
 # Login to Azure and set the Azure subscription for this script to use
 echo ........ Logging into Azure
-# az login
+az login
 az account set --subscription $AZURE_SUBSCRIPTION_ID
 
 ## -------
