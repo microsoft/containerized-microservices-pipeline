@@ -14,7 +14,7 @@ AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the profile of Azure Traffic Manag
 
 ## -------
 # Values from inception.txt output
-AZURE_CONTAINER_REGISTRY_NAME=""  # Azure Container Registry Name
+AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
 
 ## -------
