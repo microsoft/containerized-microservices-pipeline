@@ -14,12 +14,12 @@ AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the profile of Azure Traffic Manag
 
 ## -------
 # Values from inception.txt output
-AZURE_CONTAINER_REGISTRY_ID=""  # Azure Container Registry ID
+AZURE_CONTAINER_REGISTRY_NAME=""  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
 
 ## -------
 # Validate that values have been set for required variables
-if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_ID" ]  || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ]
+if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ]  || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ]
 then
       echo "\A required value in deployCluster.sh is empty!!!!!!!!!!!!!"
       exit 1

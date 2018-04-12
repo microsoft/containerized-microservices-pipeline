@@ -76,5 +76,5 @@ echo ........ "Azure resource deployment complete. All resources deployed to the
 echo COMMON_RESOURCE_GROUP=$COMMON_RESOURCE_GROUP
 echo ........ "Save the following values and use them in deployCluster.sh"
 echo K8_DEPLOYMENT_KEYVAULT_NAME=$K8_DEPLOYMENT_KEYVAULT_NAME
-echo AZURE_CONTAINER_REGISTRY_ID=$AZURE_CONTAINER_REGISTRY_ID
+echo AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME
 echo MT_CONNECTION_STRING=$MT_CONNECTION_STRING
