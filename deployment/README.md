@@ -29,9 +29,15 @@ brew install kubectl
 
 #### Install on Windows with PowerShell
 ```
-Install-Script -Name install-kubectl -Scope CurrentUser -Force     
+Install-Script -Name install-kubectl -Scope CurrentUser -Force
 install-kubectl.ps1 [-DownloadLocation <path>]
 ```
+### Install ACS Engine
+[Download and install ACS Engine](https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#install)
+
+### Install JQ
+[Download and install JQ](https://stedolan.github.io/jq/download/)
+
 ## Azure Resource & k8 Cluster Deployment
 
 ### Create initial common Azure resources
@@ -39,6 +45,13 @@ These resources should only be created one time per subscription and common reso
 
 #### Configure environment variables
 Open /deployment/globalVariables.sh and enter values for the deployment.
+
+#### Configure SSH keys
+- Generate new [SSH keys](https://github.com/Azure/acs-engine/blob/master/docs/ssh.md#ssh-key-generation/) and save it in /deployment as `cluster_rsa.pub`
+- Update `clusterDefinition.json` with the public key contained in `cluster_rsa.pub`. `keyData` must contain the public portion of an SSH key (e.g. 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABA....')
+
+
+
 
 #### Execute inception.sh
 Open a bash shell and execute inception.sh
