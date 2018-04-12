@@ -25,7 +25,7 @@ namespace WebAndLoadTests.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://13.68.28.202")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string AppUrl {
             get {
                 return ((string)(this["AppUrl"]));
@@ -34,7 +34,7 @@ namespace WebAndLoadTests.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://13.68.92.111")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string MTUrl {
             get {
                 return ((string)(this["MTUrl"]));
