@@ -9,23 +9,27 @@
             "dnsPrefix": "",
             "vmSize": "Standard_D2_v2"
         },
-        "agentPoolProfiles": [{
-            "name": "agentpool1",
-            "count": 3,
-            "vmSize": "Standard_D2_v2",
-            "availabilityProfile": "AvailabilitySet"
-        }],
+        "agentPoolProfiles": [
+            {
+                "name": "agentpool1",
+                "count": 3,
+                "vmSize": "Standard_D2_v2",
+                "availabilityProfile": "AvailabilitySet"
+            }
+        ],
         "linuxProfile": {
             "adminUsername": "azureuser",
             "ssh": {
-                "publicKeys": [{
-                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDP7WgyIXxYSagQVcdJTxGkyhw1uNp5KU/86GsrplkGJNYqmoUYOTLBr3dgU1Up2imLchxw7eezfV11ftCIoRfXz63PtfQenbg9NfXucwEzn+TAV4xPIrFOVwOuiQiUjjSLnZ6LF4A+g4iLZMLUbEuLQjOJ4NGaAHlNM5PvhB5UbhSChYipUUnBo+16wFVasjDk9o9Tp8jfw9vBKE61sZ9jQXBkNqNqk+CoEMNjJuuUZcjzLYwz65tV+We4G/W9dzTv7bzZEYz13RZge7wQOm9xQFeZUGv8uZOAraC0cpIa+MT6YTHNpN1PVOxANW2HujLHj50g7OjgAM+n8tUkmCyt "
-                }]
-            },
-            "servicePrincipalProfile": {
-              "clientId": "",
-              "secret": ""
+                "publicKeys": [
+                    {
+                        "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDP7WgyIXxYSagQVcdJTxGkyhw1uNp5KU/86GsrplkGJNYqmoUYOTLBr3dgU1Up2imLchxw7eezfV11ftCIoRfXz63PtfQenbg9NfXucwEzn+TAV4xPIrFOVwOuiQiUjjSLnZ6LF4A+g4iLZMLUbEuLQjOJ4NGaAHlNM5PvhB5UbhSChYipUUnBo+16wFVasjDk9o9Tp8jfw9vBKE61sZ9jQXBkNqNqk+CoEMNjJuuUZcjzLYwz65tV+We4G/W9dzTv7bzZEYz13RZge7wQOm9xQFeZUGv8uZOAraC0cpIa+MT6YTHNpN1PVOxANW2HujLHj50g7OjgAM+n8tUkmCyt "
+                    }
+                ]
             }
+        },
+        "servicePrincipalProfile": {
+            "clientId": "",
+            "secret": ""
         }
     }
 }

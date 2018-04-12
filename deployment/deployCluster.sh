@@ -16,7 +16,7 @@ AZURE_TRAFFIC_MANAGER_PROFILE_NAME=microservices-trafficmgr # Name of the profil
 ## -------
 # Login to Azure and set the Azure subscription for this script to use
 echo ........ Logging into Azure
-az login
+# az login
 az account set --subscription $AZURE_SUBSCRIPTION_ID
 
 ## -------
@@ -48,21 +48,32 @@ az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURC
 DNS_PREFIX=$CLUSTER_NAME
 
 # prepare the cluster deployment file for ACS Engine
+echo Starting update of cluster definition json file
 CLUSTER_DEFINITION=$(<clusterDefinition.json)
-CLUSTER_DEFINITION=$(jq --arg id $ACS_SERVICE_PRINCIPAL_ID '.properties.linuxProfile.servicePrincipalProfile.clientId=$id' <<< "$CLUSTER_DEFINITION")
-CLUSTER_DEFINITION=$(jq --arg password $ACS_SERVICE_PRINCIPAL_PASSWORD '.properties.linuxProfile.servicePrincipalProfile.clientId=$secret' <<< "$CLUSTER_DEFINITION")
+CLUSTER_DEFINITION=$(jq --arg id $ACS_SERVICE_PRINCIPAL_ID '.properties.servicePrincipalProfile.clientId=$id' <<< "$CLUSTER_DEFINITION")
+CLUSTER_DEFINITION=$(jq --arg secret $ACS_SERVICE_PRINCIPAL_PASSWORD '.properties.servicePrincipalProfile.secret=$secret' <<< "$CLUSTER_DEFINITION")
 CLUSTER_DEFINITION=$(jq --arg dnsPrefix $DNS_PREFIX '.properties.masterProfile.dnsPrefix=$dnsPrefix' <<< "$CLUSTER_DEFINITION")
-echo CLUSTER_DEFINITION > clusterDefinition.temp.json
+echo $CLUSTER_DEFINITION > clusterDefinition.temp.json
+echo Updated cluster definition json file
 
 # generate the ARM template
+echo Starting generation of ARM template
 acs-engine generate ./clusterDefinition.temp.json
-rm ./clusterDefinition.temp.json
+echo Completed generation of ARM template
 
-$ az group deployment create \
+# deploy the ARM template
+echo Starting deployment of ARM template
+az group deployment create \
     --name acs-engine-cluster \
     --resource-group $RESOURCE_GROUP \
     --template-file ./_output/$DNS_PREFIX/azuredeploy.json \
     --parameters ./_output/$DNS_PREFIX/azuredeploy.parameters.json
+echo Completed deployment of ARM template
+
+echo Starting to clean up ARM template resources
+#rm ./clusterDefinition.temp.json
+#rm -d -r ./_output
+echo Starting to clean up ARM template resources
 
 echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
 sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
