@@ -46,7 +46,23 @@ az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURC
 ## -------
 ## create kubernetes cluster
 DNS_PREFIX=$CLUSTER_NAME
-az acs create --orchestrator-type=kubernetes --generate-ssh-keys --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --dns-prefix $DNS_PREFIX --service-principal http://$ACS_SERVICE_PRINCIPAL_NAME --client-secret $ACS_SERVICE_PRINCIPAL_PASSWORD --agent-vm-size Standard_DS2_v2 --master-vm-size Standard_DS2_v2 
+
+# prepare the cluster deployment file for ACS Engine
+CLUSTER_DEFINITION=$(<clusterDefinition.json)
+CLUSTER_DEFINITION=$(jq --arg id $ACS_SERVICE_PRINCIPAL_ID '.properties.linuxProfile.servicePrincipalProfile.clientId=$id' <<< "$CLUSTER_DEFINITION")
+CLUSTER_DEFINITION=$(jq --arg password $ACS_SERVICE_PRINCIPAL_PASSWORD '.properties.linuxProfile.servicePrincipalProfile.clientId=$secret' <<< "$CLUSTER_DEFINITION")
+CLUSTER_DEFINITION=$(jq --arg dnsPrefix $DNS_PREFIX '.properties.masterProfile.dnsPrefix=$dnsPrefix' <<< "$CLUSTER_DEFINITION")
+echo CLUSTER_DEFINITION > clusterDefinition.temp.json
+
+# generate the ARM template
+acs-engine generate ./clusterDefinition.temp.json
+rm ./clusterDefinition.temp.json
+
+$ az group deployment create \
+    --name acs-engine-cluster \
+    --resource-group $RESOURCE_GROUP \
+    --template-file ./_output/$DNS_PREFIX/azuredeploy.json \
+    --parameters ./_output/$DNS_PREFIX/azuredeploy.parameters.json
 
 echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
 sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
