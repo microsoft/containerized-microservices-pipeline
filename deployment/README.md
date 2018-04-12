@@ -61,18 +61,19 @@ chmod 775 *
 ./inception.sh
 ```
 
-Copy the values for the following variables from the script output, you will need these in deployCluster.sh:
+Copy the values for the following variables from the inception script output file - inception.txt, you will need these in deployCluster.sh:
 
 ```
 K8_DEPLOYMENT_KEYVAULT_NAME
-AZURE_CONTAINER_REGISTRY_ID
+AZURE_CONTAINER_REGISTRY_NAME
+MT_CONNECTION_STRING
 ```
 
 #### Edit deployCluster.sh
 Using the values from the output of inception.sh captured above, fill out the following values:
 ```
-AZURE_CONTAINER_REGISTRY_ID="/subscriptions/<youridhere>resourceGroups/microservices-westus-resources/providers/Microsoft.ContainerRegistry/registries/acrmicroserviceswestus" # Azure Container Registry ID
-K8_DEPLOYMENT_KEYVAULT_NAME=microservices-deploy-kv
+AZURE_CONTAINER_REGISTRY_NAME=
+K8_DEPLOYMENT_KEYVAULT_NAME=
 ```
 
 #### Execute deployCluster.sh

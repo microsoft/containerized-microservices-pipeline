@@ -3,11 +3,27 @@
 set -x
 
 ## -------
-# Cluster variables
-CLUSTER_NAME=microservices-k8-cluster # Add Desired Cluster Name
-AZURE_CONTAINER_REGISTRY_NAME=""  # Azure Container Registry name
-K8_DEPLOYMENT_KEYVAULT_NAME=microservices-deploy-kv # Name of KeyVault provisioned in createMtSvc.sh
-AZURE_TRAFFIC_MANAGER_PROFILE_NAME=microservices-trafficmgr # Name of the profile of Azure Traffic Manager
+# Write stdout and stderr to deployCluster.txt file
+exec > >(tee "deployCluster.txt")
+exec 2>&1
+
+## -------
+# Cluster variables 
+CLUSTER_NAME= # Add Desired Cluster Name
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the profile of Azure Traffic Manager
+
+## -------
+# Values from inception.txt output
+AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
+K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
+
+## -------
+# Validate that values have been set for required variables
+if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ]  || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ]
+then
+      echo "\A required value in deployCluster.sh is empty!!!!!!!!!!!!!"
+      exit 1
+fi
 
 ## -------
 # Import global variables

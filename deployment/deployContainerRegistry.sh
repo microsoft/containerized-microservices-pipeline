@@ -17,8 +17,4 @@ SKU=Basic # Basic, Premium, Standard
 ## create acr
 az acr delete -n $AZURE_CONTAINER_REGISTRY_NAME
 az acr create -n $AZURE_CONTAINER_REGISTRY_NAME -g $COMMON_RESOURCE_GROUP --sku $SKU -l $AZURE_LOCATION --admin-enabled true
-
-## -------
-# Obtain the full registry ID for subsequent command args
-AZURE_CONTAINER_REGISTRY_ID=$(az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query id --output tsv)
-export AZURE_CONTAINER_REGISTRY_ID
+export AZURE_CONTAINER_REGISTRY_NAME
