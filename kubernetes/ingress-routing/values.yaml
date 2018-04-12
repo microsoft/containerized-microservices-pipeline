@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 ingress:
-  - path: /login-api
+  - path: /api
     serviceName: canary-microservice-service-deployment
     servicePort: 80
   - serviceName: canary-microservice-app-deployment
