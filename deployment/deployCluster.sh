@@ -71,8 +71,8 @@ az group deployment create \
 echo Completed deployment of ARM template
 
 echo Starting to clean up ARM template resources
-#rm ./clusterDefinition.temp.json
-#rm -d -r ./_output
+rm ./clusterDefinition.temp.json
+rm -d -r ./_output
 echo Starting to clean up ARM template resources
 
 echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
