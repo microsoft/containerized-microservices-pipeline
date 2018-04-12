@@ -30,7 +30,7 @@ namespace WebAndLoadTests
             StringHttpBody request1Body = new StringHttpBody();
             request1Body.ContentType = "application/json";
             request1Body.InsertByteOrderMark = false;
-            request1Body.BodyString = " { \"userName\" : \"user1x\" , \"password\" : \"Password1x\" , \"email\" : \"email@test.com\" }"; // TODO: Json body - example : { \"userName\" : \"USERNAME\" , \"password\" : \"PASSWORD\" , \"email\" : \"EMAIL\" }
+            request1Body.BodyString = ""; // TODO: Json body - example : { \"userName\" : \"USERNAME\" , \"password\" : \"PASSWORD\" , \"email\" : \"EMAIL\" }
             request1.Body = request1Body;
             yield return request1;
             request1 = null;
@@ -44,7 +44,7 @@ namespace WebAndLoadTests
             requestLogin.ContentType = "application/json";
             using (var streamWriter = new StreamWriter(requestLogin.GetRequestStream()))
             {
-                string json = "{\"userName\":\"user1x\", \"password\":\"Password1x\"}";
+                string json = ""; // TODO: Json body - example : "{\"userName\":\"USERNAME\", \"password\":\"PASSWORD\"}";
 
                 streamWriter.Write(json);
                 streamWriter.Flush();
