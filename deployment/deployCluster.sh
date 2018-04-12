@@ -7,6 +7,7 @@ set -x
 CLUSTER_NAME=microservices-k8-cluster # Add Desired Cluster Name
 AZURE_CONTAINER_REGISTRY_NAME=""  # Azure Container Registry name
 K8_DEPLOYMENT_KEYVAULT_NAME=microservices-deploy-kv # Name of KeyVault provisioned in createMtSvc.sh
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME=microservices-trafficmgr # Name of the profile of Azure Traffic Manager
 
 ## -------
 # Import global variables
@@ -47,12 +48,13 @@ az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURC
 DNS_PREFIX=$CLUSTER_NAME
 az acs create --orchestrator-type=kubernetes --generate-ssh-keys --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --dns-prefix $DNS_PREFIX --service-principal http://$ACS_SERVICE_PRINCIPAL_NAME --client-secret $ACS_SERVICE_PRINCIPAL_PASSWORD --agent-vm-size Standard_DS2_v2 --master-vm-size Standard_DS2_v2 
 
+echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
+sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
+
 ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
 ACS_EMAIL=`az account show --query user.name -o tsv`
 
 kubectl create secret docker-registry acr-credentials --docker-server $ACR_URL --docker-email $ACS_EMAIL --docker-username=$ACS_SERVICE_PRINCIPAL_ID --docker-password $ACS_SERVICE_PRINCIPAL_PASSWORD
-
-sleep 60 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
 
 ## -------
 # # build and push hexadite to ACR
@@ -85,6 +87,17 @@ helm init --upgrade
 ## ------
 ## Traefik ingress controller
 helm install stable/traefik --name traefik-$CLUSTER_NAME --namespace kube-system
+
+## ------
+## OMS Agent
+WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsoft.OperationalInsights/workspaces --name containerized-loganalyticsWS | grep customerId | sed -e 's/.*://')
+#helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=$KEYVAL stable/msoms
+# TODO: populate $KEYVAL parameter
+
+## -------
+## create Azure Traffic Manager endpoint for this cluster
+AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}mgmt'].dnsSettings.fqdn" -o tsv)
+az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
 
 ## -------
 # ACS cluster deployment and setup complete
