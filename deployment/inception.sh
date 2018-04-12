@@ -3,6 +3,11 @@
 set -x
 
 ## -------
+# Write stdout and stderr to inception.txt file
+exec > >(tee "inception.txt")
+exec 2>&1
+
+## -------
 # Import global variables
 . ./globalVariables.prod.sh
 
