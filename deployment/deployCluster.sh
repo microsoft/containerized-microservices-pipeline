@@ -8,7 +8,7 @@ exec > >(tee "deployCluster.txt")
 exec 2>&1
 
 ## -------
-# Cluster variables 
+# Cluster variables
 CLUSTER_NAME= # Add Desired Cluster Name
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the profile of Azure Traffic Manager
 
@@ -91,8 +91,8 @@ rm ./clusterDefinition.temp.json
 rm -d -r ./_output
 echo Starting to clean up ARM template resources
 
-echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
-sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
+#echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
+#sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
 
 ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
 ACS_EMAIL=`az account show --query user.name -o tsv`
@@ -112,6 +112,8 @@ cd ..
 
 ## -------
 ## Download Kubernetes Credentials
+scp azureuser@$DNS_PREFIX.$AZURE_LOCATION.cloudapp.azure.com:.kube/config .
+export KUBECONFIG=`pwd`/config
 az acs kubernetes get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
 
 ## ------
