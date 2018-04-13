@@ -8,7 +8,7 @@ exec > >(tee "deployCluster.txt")
 exec 2>&1
 
 ## -------
-# Cluster variables 
+# Cluster variables
 CLUSTER_NAME= # Add Desired Cluster Name
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the profile of Azure Traffic Manager
 
@@ -62,10 +62,37 @@ az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURC
 ## -------
 ## create kubernetes cluster
 DNS_PREFIX=$CLUSTER_NAME
-az acs create --orchestrator-type=kubernetes --generate-ssh-keys --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --dns-prefix $DNS_PREFIX --service-principal http://$ACS_SERVICE_PRINCIPAL_NAME --client-secret $ACS_SERVICE_PRINCIPAL_PASSWORD --agent-vm-size Standard_DS2_v2 --master-vm-size Standard_DS2_v2 
 
-echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
-sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
+# prepare the cluster deployment file for ACS Engine
+echo Starting update of cluster definition json file
+CLUSTER_DEFINITION=$(<clusterDefinition.json)
+CLUSTER_DEFINITION=$(jq --arg id $ACS_SERVICE_PRINCIPAL_ID '.properties.servicePrincipalProfile.clientId=$id' <<< "$CLUSTER_DEFINITION")
+CLUSTER_DEFINITION=$(jq --arg secret $ACS_SERVICE_PRINCIPAL_PASSWORD '.properties.servicePrincipalProfile.secret=$secret' <<< "$CLUSTER_DEFINITION")
+CLUSTER_DEFINITION=$(jq --arg dnsPrefix $DNS_PREFIX '.properties.masterProfile.dnsPrefix=$dnsPrefix' <<< "$CLUSTER_DEFINITION")
+echo $CLUSTER_DEFINITION > clusterDefinition.temp.json
+echo Updated cluster definition json file
+
+# generate the ARM template
+echo Starting generation of ARM template
+acs-engine generate ./clusterDefinition.temp.json
+echo Completed generation of ARM template
+
+# deploy the ARM template
+echo Starting deployment of ARM template
+az group deployment create \
+    --name acs-engine-cluster \
+    --resource-group $RESOURCE_GROUP \
+    --template-file ./_output/$DNS_PREFIX/azuredeploy.json \
+    --parameters ./_output/$DNS_PREFIX/azuredeploy.parameters.json
+echo Completed deployment of ARM template
+
+echo Starting to clean up ARM template resources
+rm ./clusterDefinition.temp.json
+rm -d -r ./_output
+echo Starting to clean up ARM template resources
+
+#echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
+#sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
 
 ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
 ACS_EMAIL=`az account show --query user.name -o tsv`
@@ -84,15 +111,10 @@ docker push ${ACR_URL}/hexadite:latest
 cd ..
 
 ## -------
-## Download Kubernetes Credentials
-az acs kubernetes get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
-
-## ------
-## Kube Version
+## Download Kubernetes Credentials and show cluster information
+scp -i ./cluster_rsa azureuser@$DNS_PREFIX.$AZURE_LOCATION.cloudapp.azure.com:.kube/config .
+export KUBECONFIG=`pwd`/config
 kubectl version
-
-## ------
-## Kube Cluster
 kubectl cluster-info
 
 ## ------
@@ -114,7 +136,7 @@ WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsof
 
 ## -------
 ## create Azure Traffic Manager endpoint for this cluster
-AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}mgmt'].dnsSettings.fqdn" -o tsv)
+AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}'].dnsSettings.fqdn" -o tsv)
 az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
 
 ## -------
