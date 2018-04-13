@@ -111,17 +111,10 @@ docker push ${ACR_URL}/hexadite:latest
 cd ..
 
 ## -------
-## Download Kubernetes Credentials
-scp azureuser@$DNS_PREFIX.$AZURE_LOCATION.cloudapp.azure.com:.kube/config .
+## Download Kubernetes Credentials and show cluster information
+scp -i ./cluster_rsa azureuser@$DNS_PREFIX.$AZURE_LOCATION.cloudapp.azure.com:.kube/config .
 export KUBECONFIG=`pwd`/config
-az acs kubernetes get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
-
-## ------
-## Kube Version
 kubectl version
-
-## ------
-## Kube Cluster
 kubectl cluster-info
 
 ## ------
