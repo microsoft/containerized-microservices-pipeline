@@ -29,7 +29,7 @@ SQL_ADMIN=$PROJECT_NAME-sql-admin
 SQL_ADMIN_PASSWORD=`uuidgen`
 SQL_SERVER_NAME=$PROJECT_NAME
 RANDOM_CHARS=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
-SQL_DB_NAME=$PROJECT_NAME-RANDOM_CHARS-mt
+SQL_DB_NAME=$PROJECT_NAME-$RANDOM_CHARS-mt
 
 az sql server create --admin-password $SQL_ADMIN_PASSWORD  --admin-user $SQL_ADMIN --location $AZURE_LOCATION --name $SQL_SERVER_NAME --resource-group $COMMON_RESOURCE_GROUP
 az sql db create --name $SQL_DB_NAME --resource-group $COMMON_RESOURCE_GROUP --server $SQL_SERVER_NAME
