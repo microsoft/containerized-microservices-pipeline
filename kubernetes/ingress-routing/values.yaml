@@ -4,7 +4,7 @@
 
 ingress:
   - path: /api
-    serviceName: canary-microservice-service-deployment
+    serviceName: canary-login-service-chart-service
     servicePort: 80
-  - serviceName: canary-microservice-app-deployment
+  - serviceName: canary-login-app-chart-service
     servicePort: 80
