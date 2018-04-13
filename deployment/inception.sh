@@ -31,7 +31,7 @@ az group delete --name=$COMMON_RESOURCE_GROUP --yes
 az group create --name $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION
 
 ## -------
-# Create the Azure Traffic Manager profile 
+# Create the Azure Traffic Manager profile
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME=$PROJECT_NAME-trafficmgr
 az network traffic-manager profile create --name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --routing-method Priority --unique-dns-name $PROJECT_NAME
 
@@ -59,7 +59,7 @@ echo ........ Creating App Insights
 ## -------
 # Create OMS Workspace
 echo ........ Creating OMS Workspace
-K8_DEPLOYMENT_DIAGSA_NAME=projectdiagsaname
+K8_DEPLOYMENT_DIAGSA_NAME=$PROJECT_NAMEdiagsa
 az storage account delete --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --yes
 az storage account create --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --location eastus --sku Standard_LRS
 az group deployment delete --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS"
