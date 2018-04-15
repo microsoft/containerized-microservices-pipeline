@@ -10,12 +10,12 @@ exec 2>&1
 ## -------
 # Cluster variables
 CLUSTER_NAME= # Add Desired Cluster Name
-AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the profile of Azure Traffic Manager
 
 ## -------
 # Values from inception.txt output
 AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the profile of Azure Traffic Manager
 
 ## -------
 # Validate that values have been set for required variables
@@ -126,6 +126,7 @@ helm init --upgrade
 
 ## ------
 ## Traefik ingress controller
+sleep 30 # Allow time for the helm tiller pods to init
 helm install stable/traefik --name traefik-$CLUSTER_NAME --namespace kube-system
 
 ## ------
