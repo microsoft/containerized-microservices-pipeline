@@ -37,6 +37,13 @@ tiller-deploy-677436516-cq73w                   1/1       Running   0          2
 ## Deploy Ingress Controller (One time per cluster)
 1. Run ```helm install stable/traefik --name-template="cluster" --namespace kube-system```
 
+## Install OMS Agent onto Cluster
+1. Navigate to your OMS Workspace in the portal by finding it under your "Log Analytics" resources
+2. Find your Workspace Key by clicking on the Advanced Settings blade, then Connected Sources > Linux Servers
+3. Copy the primary key and paste it into the helm command in step 5
+4. Run this command to find the Workspace ID: ```WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsoft.OperationalInsights/workspaces --name containerized-loganalyticsWS | grep customerId | sed -e 's/.*://')```
+5. Run the following with your proper Workspace Key: ```#helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=<key-value> stable/msoms```
+
 ## Deploy App Helm Chart onto Cluster
 1. Ensure Azure Container Registry Credentials are deployed onto your cluster
 2. Run ```helm install ./kubernetes/containerized-microservices-pipeline-app --name canary-containerized-microservices-pipeline-app```
