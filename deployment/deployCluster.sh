@@ -15,7 +15,7 @@ CLUSTER_NAME= # Add Desired Cluster Name
 # Values from inception.txt output
 AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
-AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the profile of Azure Traffic Manager
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
 
 ## -------
 # Validate that values have been set for required variables
@@ -91,9 +91,8 @@ rm ./clusterDefinition.temp.json
 rm -d -r ./_output
 echo Starting to clean up ARM template resources
 
-#echo "sleeping for a few minutes to allow the ACS cluster to finish initializing so we can retrieve k8 credentials"
-#sleep 300 #  Azure CLI bug needs cluster provisioning to complete before requesting credentials for kubectl
-
+## -------
+## Add ACR login credentials to k8 secret
 ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
 ACS_EMAIL=`az account show --query user.name -o tsv`
 ACR_USERNAME=`az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query username -o tsv`
@@ -102,7 +101,7 @@ ACR_PASSWORD=`az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --que
 kubectl create secret docker-registry acr-credentials --docker-server $ACR_URL --docker-email $ACS_EMAIL --docker-username=$ACS_SERVICE_PRINCIPAL_ID --docker-password $ACS_SERVICE_PRINCIPAL_PASSWORD
 
 ## -------
-# # build and push hexadite to ACR
+## build and push hexadite to ACR
 git clone https://github.com/Hexadite/acs-keyvault-agent
 cd acs-keyvault-agent
 docker build . -t ${ACR_URL}/hexadite:latest
@@ -112,8 +111,11 @@ cd ..
 
 ## -------
 ## Download Kubernetes Credentials and show cluster information
+echo "----- You will need to enter the certificate password after the next command before it times out -----"
+sleep 15 # give the user time to prepare to enter the password
 scp -i ./cluster_rsa azureuser@$DNS_PREFIX.$AZURE_LOCATION.cloudapp.azure.com:.kube/config .
 export KUBECONFIG=`pwd`/config
+kubectl config use-context $CLUSTER_NAME
 kubectl version
 kubectl cluster-info
 
@@ -126,8 +128,12 @@ helm init --upgrade
 
 ## ------
 ## Traefik ingress controller
-sleep 30 # Allow time for the helm tiller pods to init
-helm install stable/traefik --name traefik-$CLUSTER_NAME --namespace kube-system
+
+# Create rbac roles for traefik
+kubectl apply -f rbac-traefik.yaml
+
+# Deploy traefik using the service account defined in rbac roles
+kubectl apply -f deployment-traefik.yaml
 
 ## ------
 ## OMS Agent
