@@ -67,6 +67,7 @@ Copy the values for the following variables from the inception script output fil
 K8_DEPLOYMENT_KEYVAULT_NAME
 AZURE_CONTAINER_REGISTRY_NAME
 MT_CONNECTION_STRING
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME
 ```
 
 #### Edit deployCluster.sh
@@ -74,6 +75,7 @@ Using the values from the output of inception.sh captured above, fill out the fo
 ```
 AZURE_CONTAINER_REGISTRY_NAME=
 K8_DEPLOYMENT_KEYVAULT_NAME=
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME=
 ```
 
 #### Execute deployCluster.sh
