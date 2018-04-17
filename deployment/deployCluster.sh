@@ -95,19 +95,8 @@ echo Starting to clean up ARM template resources
 ## Add ACR login credentials to k8 secret
 ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
 ACS_EMAIL=`az account show --query user.name -o tsv`
-ACR_USERNAME=`az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query username -o tsv`
-ACR_PASSWORD=`az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query passwords[0].value -o tsv`
 
 kubectl create secret docker-registry acr-credentials --docker-server $ACR_URL --docker-email $ACS_EMAIL --docker-username=$ACS_SERVICE_PRINCIPAL_ID --docker-password $ACS_SERVICE_PRINCIPAL_PASSWORD
-
-## -------
-## build and push hexadite to ACR
-git clone https://github.com/Hexadite/acs-keyvault-agent
-cd acs-keyvault-agent
-docker build . -t ${ACR_URL}/hexadite:latest
-docker login -u $ACR_USERNAME -p $ACR_PASSWORD $ACR_URL
-docker push ${ACR_URL}/hexadite:latest
-cd ..
 
 ## -------
 ## Download Kubernetes Credentials and show cluster information
@@ -130,10 +119,10 @@ helm init --upgrade
 ## Traefik ingress controller
 
 # Create rbac roles for traefik
-kubectl apply -f rbac-traefik.yaml
+kubectl apply -f traefik-rbac.yaml
 
 # Deploy traefik using the service account defined in rbac roles
-kubectl apply -f deployment-traefik.yaml
+kubectl apply -f traefik-deployment.yaml
 
 ## ------
 ## OMS Agent

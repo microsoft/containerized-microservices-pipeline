@@ -48,8 +48,17 @@ echo ........ Creating Azure Container Registry
 . ./deployContainerRegistry.sh
 
 ## -------
-# Create the Azure SQL Database
-# TODO
+## build and push hexadite to ACR
+ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
+ACR_USERNAME=`az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query username -o tsv`
+ACR_PASSWORD=`az acr credential show --name $AZURE_CONTAINER_REGISTRY_NAME --query passwords[0].value -o tsv`
+git clone https://github.com/Hexadite/acs-keyvault-agent
+cd acs-keyvault-agent
+docker build . -t ${ACR_URL}/hexadite:latest
+docker login -u $ACR_USERNAME -p $ACR_PASSWORD $ACR_URL
+docker push ${ACR_URL}/hexadite:latest
+cd ..
+rm -r acs-keyvault-agent
 
 ## -------
 # Create App Insights
