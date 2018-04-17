@@ -38,7 +38,7 @@ spec:
           value: /secrets
         - name: SECRETS_KEYS
           value: mt-aad-password
-        {{- range $index, item := .Values.yaml }}  #looping through values in ConfigMap
+        {{- range $index, item := .Values.config }}  #looping through values in ConfigMap
           - name: {{ item.name }}
             valueFrom:
               configMapKeyRef:
