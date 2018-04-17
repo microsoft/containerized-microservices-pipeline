@@ -116,6 +116,7 @@ Copy the values for the following variables from the inception script output fil
 ```
 K8_DEPLOYMENT_KEYVAULT_NAME
 AZURE_CONTAINER_REGISTRY_NAME
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME
 MT_CONNECTION_STRING
 ```
 
@@ -128,7 +129,7 @@ The following resources are deployed by deployCluster.sh:
 - Azure Resource Group specific to the cluster
 - Service Principal to serve as the cluster identity
 - Permissions to access common resources
-- ACS Engine based k8 cluster
+- ACS Engine based k8 cluster (1 master | 3 nodes)
 - Helm
 - Traefik
 - Azure Traffic Manager endpoint to cluster
