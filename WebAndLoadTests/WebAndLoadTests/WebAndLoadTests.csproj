@@ -60,7 +60,10 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChangePasswordTest.cs" />
     <Compile Include="CreateUserWebTest.cs" />
+    <Compile Include="DeleteUserTest.cs" />
+    <Compile Include="LoginUserTest.cs" />
     <Compile Include="MTWebTest.cs" />
     <Compile Include="AppWebTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,14 +88,15 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="WebTest1.webtest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExtractionRule\ExtractionRule.csproj">
       <Project>{3560344c-1c3a-4c3b-a7ee-c08e4e65319f}</Project>
       <Name>ExtractionRule</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MTApi\MTApi.csproj">
+      <Project>{39a8c2f0-265f-4b7b-b285-4fc4430130fd}</Project>
+      <Name>MTApi</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
