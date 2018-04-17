@@ -48,10 +48,6 @@ echo ........ Creating Azure Container Registry
 . ./deployContainerRegistry.sh
 
 ## -------
-# Create the Azure SQL Database
-# TODO
-
-## -------
 # Create App Insights
 echo ........ Creating App Insights
 . ./deployAppInsights.sh
