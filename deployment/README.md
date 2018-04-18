@@ -135,6 +135,9 @@ The following resources are deployed by deployCluster.sh:
 - Traefik
 - Azure Traffic Manager endpoint to cluster
 
+The following diagram shows the **physical artifacts** created in the resource group.
+![](kubernetes-resource-group.png)
+
 #### Step 1: Edit deployCluster.sh
 
 Fill out the following values....
