@@ -4,9 +4,9 @@
 
 ingress:
   - path: /api
-    serviceName: canary-login-service-chart-service
+    serviceName: login-service-chart-service
     servicePort: 80
-  - serviceName: canary-login-app-chart-service
+  - serviceName: login-app-chart-service
     servicePort: 80
 
 configs:
