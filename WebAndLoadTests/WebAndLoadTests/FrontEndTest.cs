@@ -6,10 +6,10 @@
     using Microsoft.VisualStudio.TestTools.WebTesting;
     using WebAndLoadTests.Properties;
 
-    public class AppWebTest : WebTest
+    public class FrontEndTest : WebTest
     {
 
-        public AppWebTest()
+        public FrontEndTest()
         {
             this.PreAuthenticate = true;
             this.Proxy = "default";
