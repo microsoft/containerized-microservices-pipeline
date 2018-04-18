@@ -38,6 +38,13 @@ spec:
           value: /secrets
         - name: SECRETS_KEYS
           value: mt-aad-password
+        {{- range $index, item := .Values.config }}  #looping through values in ConfigMap
+          - name: {{ item.name }}
+            valueFrom:
+              configMapKeyRef:
+                name: configs
+                key: {{ item.key }}
+        {{- end }}
 
         volumeMounts:
         - name: secrets
