@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.WebTesting;
 using MTApi;
 using Newtonsoft.Json.Linq;
@@ -9,9 +12,13 @@ namespace WebAndLoadTests
     public class CreateUserWebTest : WebTest
     {
         public string mtUrl = Settings.Default.MTUrl;
-        public string loginApiRoute = "/api/login";
-        public string accountApiRoute = "/api/account";
-        public string _userId = "";
+        public string adminUsername = Settings.Default.AdminUsername;
+        public string adminPassword = Settings.Default.AdminPassword;
+        public string username = ""; // TODO: Add username
+        public string password = ""; // TODO: Add password
+        public string email = ""; // TODO: Add email
+        public string userId = "";
+        public string adminLoginToken = "";
 
         public CreateUserWebTest()
         {
@@ -22,13 +29,13 @@ namespace WebAndLoadTests
 
         public override IEnumerator<WebTestRequest> GetRequestEnumerator()
         {
-            // Create user test
-            WebTestRequest requestCreateUser = new WebTestRequest(mtUrl + accountApiRoute);
+            MTApiFunctionalities mtApi = new MTApiFunctionalities();
+            WebTestRequest requestCreateUser = new WebTestRequest(mtUrl + mtApi.accountApiRoute);
             requestCreateUser.Method = "POST";
             StringHttpBody requestCreateUserBody = new StringHttpBody();
             requestCreateUserBody.ContentType = "application/json";
             requestCreateUserBody.InsertByteOrderMark = false;
-            requestCreateUserBody.BodyString = ""; // TODO: Json body - example : { \"userName\" : \"USERNAME\" , \"password\" : \"PASSWORD\" , \"email\" : \"EMAIL\" }
+            requestCreateUserBody.BodyString = "{ \"userName\" : \"" + username + "\" , \"password\" : \"" + password + "\" , \"email\" : \"" + email + "\" }"; 
             requestCreateUser.Body = requestCreateUserBody;
             yield return requestCreateUser;
             requestCreateUser = null;
@@ -36,12 +43,24 @@ namespace WebAndLoadTests
 
         private void TearDown(object sender, PostWebTestEventArgs e)
         {
-            MTApiFunctionalities mtApi = new MTApiFunctionalities();
-            JObject jsonResponse = mtApi.LoginUser(mtUrl, "", ""); // TODO: Add userName and Password for log in
-            _userId = jsonResponse["id"].ToString();
-            mtApi.DeleteUser(mtUrl, _userId);
+            try
+            {
+                MTApiFunctionalities mtApi = new MTApiFunctionalities();
+                HttpWebResponse httpResLogin = mtApi.LoginUser(mtUrl, username, password); 
+                JObject jsonResponse = mtApi.JsonParseHttpRes(httpResLogin);
+                userId = jsonResponse["id"].ToString();
+                httpResLogin.Close();
+                HttpWebResponse httpResAdminLogin = mtApi.LoginUser(mtUrl, adminUsername, adminPassword); // Login as admin to get admin token to delete user
+                JObject jsonResponseAdminLogin = mtApi.JsonParseHttpRes(httpResAdminLogin);
+                adminLoginToken = jsonResponseAdminLogin["token"].ToString();
+                httpResAdminLogin.Close();
+                HttpWebResponse httpResDel = mtApi.DeleteUser(mtUrl, userId, adminLoginToken);
+                httpResDel.Close();
+            }
+            catch (WebException webExc)
+            {
+                Debug.WriteLine("\r\nWebException Raised. The following error occured : {0}", webExc.Status);
+            }
         }
-
-
     }
 }

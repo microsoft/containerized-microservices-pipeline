@@ -1,6 +1,8 @@
 ﻿namespace WebAndLoadTests
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Net;
     using Microsoft.VisualStudio.TestTools.WebTesting;
     using MTApi;
     using Newtonsoft.Json.Linq;
@@ -9,9 +11,13 @@
     public class LoginUserTest : WebTest
     {
         public string mtUrl = Settings.Default.MTUrl;
-        public string loginApiRoute = "/api/login";
-        public string accountApiRoute = "/api/account";
-        public string _userId = "";
+        public string adminUsername = Settings.Default.AdminUsername;
+        public string adminPassword = Settings.Default.AdminPassword;
+        public string username = ""; // TODO: Add username
+        public string password = ""; // TODO: Add password
+        public string email = ""; // TODO: Add email
+        public string userId = "";
+        public string adminLoginToken = "";
 
         public LoginUserTest()
         {
@@ -23,19 +29,31 @@
 
         private void SetUp(object sender, PreWebTestEventArgs e)
         {
-            MTApiFunctionalities mtApi = new MTApiFunctionalities();
-            JObject jsonResponse = mtApi.CreateUser(mtUrl, "", "", ""); // TODO: Add username, password, and email for create user
-            _userId = jsonResponse["id"].ToString();
+            try
+            {
+                MTApiFunctionalities mtApi = new MTApiFunctionalities();
+                HttpWebResponse httpResCreate = mtApi.CreateUser(mtUrl, username, password, email); 
+                JObject jsonResponse = mtApi.JsonParseHttpRes(httpResCreate);
+                userId = jsonResponse["id"].ToString();
+                httpResCreate.Close();
+            }
+            catch (WebException webExc)
+            {
+                Debug.WriteLine("\r\nWebException Raised. The following error occured : {0}", webExc.Status);
+                Stop(); // Stop test on exception
+                Outcome = Outcome.Fail; // Fail web test due to exception
+            }
         }
 
         public override IEnumerator<WebTestRequest> GetRequestEnumerator()
         {
-            WebTestRequest requestLogin = new WebTestRequest(mtUrl + loginApiRoute);
+            MTApiFunctionalities mtApi = new MTApiFunctionalities();
+            WebTestRequest requestLogin = new WebTestRequest(mtUrl + mtApi.loginApiRoute);
             requestLogin.Method = "POST";
             StringHttpBody requestLoginBody = new StringHttpBody();
             requestLoginBody.ContentType = "application/json";
             requestLoginBody.InsertByteOrderMark = false;
-            requestLoginBody.BodyString = ""; // TODO: Json body - example : { \"userName\" : \"USERNAME\" , \"password\" : \"PASSWORD\"}"
+            requestLoginBody.BodyString = "{ \"userName\" : \"" + username + "\" , \"password\" : \"" + password + "\"}"; 
             requestLogin.Body = requestLoginBody;
             yield return requestLogin;
             requestLogin = null;
@@ -43,8 +61,27 @@
 
         private void TearDown(object sender, PostWebTestEventArgs e)
         {
-            MTApiFunctionalities mtApi = new MTApiFunctionalities();
-            mtApi.DeleteUser(mtUrl, _userId);
+            try
+            {
+                MTApiFunctionalities mtApi = new MTApiFunctionalities();
+                if (string.IsNullOrEmpty(userId)) // When SetUp fails and didn't save userId
+                {
+                    HttpWebResponse httpResLogin = mtApi.LoginUser(mtUrl, username, password);
+                    JObject jsonResponse = mtApi.JsonParseHttpRes(httpResLogin);
+                    userId = jsonResponse["id"].ToString();
+                    httpResLogin.Close();
+                }
+                HttpWebResponse httpResAdminLogin = mtApi.LoginUser(mtUrl, adminUsername, adminPassword); // Login as admin to get admin token to delete user
+                JObject jsonResponseAdminLogin = mtApi.JsonParseHttpRes(httpResAdminLogin);
+                adminLoginToken = jsonResponseAdminLogin["token"].ToString();
+                httpResAdminLogin.Close();
+                HttpWebResponse httpResDel = mtApi.DeleteUser(mtUrl, userId, adminLoginToken);
+                httpResDel.Close();
+            }
+            catch (WebException webExc)
+            {
+                Debug.WriteLine("\r\nWebException Raised. The following error occured : {0}", webExc.Status);
+            }
         }
     }
 }
