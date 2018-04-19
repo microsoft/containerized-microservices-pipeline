@@ -16,7 +16,11 @@ spec:
     spec:
       containers:
       - name: login-service-app
-        image: container-registry/service:latest
+        image: acrivanbnywestus.azurecr.io/service:latest # will be {{ .Values... }} in Helm charts
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+          readOnly: true
         ports:
            - containerPort: 4201
         resources:
@@ -24,16 +28,23 @@ spec:
           cpu: "500m" # X/1000 of a CPU
       initContainers:
       - name: keyvault-agent
-        image: ivanshaporov/test # will be in ACR
+        image: acrivanbnywestus.azurecr.io/hexadite:latest # will be {{ .Values... }} in Helm charts
         env:
         - name: VAULT_BASE_URL
-          value: https://ivan-bny-mt-deployment.vault.azure.net  # will be {{ .Values... }} in Helm charts
+          value: https://ivanbny-deploy-kv.vault.azure.net # will be {{ .Values... }} in Helm charts
         - name: SERVICE_PRINCIPLE_FILE_PATH
           value: /host/azure.json
         - name: SECRETS_FOLDER
           value: /secrets
         - name: SECRETS_KEYS
           value: mt-aad-password
+        {{- range $index, item := .Values.config }}  #looping through values in ConfigMap
+          - name: {{ item.name }}
+            valueFrom:
+              configMapKeyRef:
+                name: configs
+                key: {{ item.key }}
+        {{- end }}
 
         volumeMounts:
         - name: secrets
@@ -42,6 +53,10 @@ spec:
         - name: host-sp
           mountPath: /host/azure.json
           readOnly: true
+
+      imagePullSecrets:
+        - name: acr-credentials
+
       volumes:
       - name: secrets
         emptyDir:
