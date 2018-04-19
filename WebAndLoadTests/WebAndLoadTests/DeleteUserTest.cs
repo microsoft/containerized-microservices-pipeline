@@ -44,7 +44,6 @@
             }
             catch (WebException webExc)
             {
-                Debug.WriteLine("\r\nWebException Raised. The following error occured : {0}", webExc.Status);
                 Stop(); // Stop test on exception
                 Outcome = Outcome.Fail; // Fail web test due to exception
                 this.PostWebTest += TearDown; // Add TearDown to make sure if user exists, it gets deleted
@@ -63,27 +62,20 @@
 
         private void TearDown(object sender, PostWebTestEventArgs e)
         {
-            try
+            MTApiFunctionalities mtApi = new MTApiFunctionalities();
+            if (string.IsNullOrEmpty(userId)) // When SetUp fails and didn't save userId
             {
-                MTApiFunctionalities mtApi = new MTApiFunctionalities();
-                if (string.IsNullOrEmpty(userId)) // When SetUp fails and didn't save userId
-                {
-                    HttpWebResponse httpResLogin = mtApi.LoginUser(mtUrl, username, password);
-                    JObject jsonResponse = mtApi.JsonParseHttpRes(httpResLogin);
-                    userId = jsonResponse["id"].ToString();
-                    httpResLogin.Close();
-                }
-                HttpWebResponse httpResAdminLogin = mtApi.LoginUser(mtUrl, adminUsername, adminPassword); // Login as admin to get admin token to delete user
-                JObject jsonResponseAdminLogin = mtApi.JsonParseHttpRes(httpResAdminLogin);
-                adminLoginToken = jsonResponseAdminLogin["token"].ToString();
-                httpResAdminLogin.Close();
-                HttpWebResponse httpResDel = mtApi.DeleteUser(mtUrl, userId, adminLoginToken);
-                httpResDel.Close();
+                HttpWebResponse httpResLogin = mtApi.LoginUser(mtUrl, username, password);
+                JObject jsonResponse = mtApi.JsonParseHttpRes(httpResLogin);
+                userId = jsonResponse["id"].ToString();
+                httpResLogin.Close();
             }
-            catch (WebException webExc)
-            {
-                Debug.WriteLine("\r\nWebException Raised. The following error occured : {0}", webExc.Status);
-            }
+            HttpWebResponse httpResAdminLogin = mtApi.LoginUser(mtUrl, adminUsername, adminPassword); // Login as admin to get admin token to delete user
+            JObject jsonResponseAdminLogin = mtApi.JsonParseHttpRes(httpResAdminLogin);
+            adminLoginToken = jsonResponseAdminLogin["token"].ToString();
+            httpResAdminLogin.Close();
+            HttpWebResponse httpResDel = mtApi.DeleteUser(mtUrl, userId, adminLoginToken);
+            httpResDel.Close();
         }
     }
 }

@@ -17,8 +17,6 @@ namespace WebAndLoadTests
         public string username = ""; // TODO: Add username
         public string password = ""; // TODO: Add password
         public string email = ""; // TODO: Add email
-        public string userId = "";
-        public string adminLoginToken = "";
 
         public CreateUserWebTest()
         {
@@ -43,24 +41,17 @@ namespace WebAndLoadTests
 
         private void TearDown(object sender, PostWebTestEventArgs e)
         {
-            try
-            {
-                MTApiFunctionalities mtApi = new MTApiFunctionalities();
-                HttpWebResponse httpResLogin = mtApi.LoginUser(mtUrl, username, password); 
-                JObject jsonResponse = mtApi.JsonParseHttpRes(httpResLogin);
-                userId = jsonResponse["id"].ToString();
-                httpResLogin.Close();
-                HttpWebResponse httpResAdminLogin = mtApi.LoginUser(mtUrl, adminUsername, adminPassword); // Login as admin to get admin token to delete user
-                JObject jsonResponseAdminLogin = mtApi.JsonParseHttpRes(httpResAdminLogin);
-                adminLoginToken = jsonResponseAdminLogin["token"].ToString();
-                httpResAdminLogin.Close();
-                HttpWebResponse httpResDel = mtApi.DeleteUser(mtUrl, userId, adminLoginToken);
-                httpResDel.Close();
-            }
-            catch (WebException webExc)
-            {
-                Debug.WriteLine("\r\nWebException Raised. The following error occured : {0}", webExc.Status);
-            }
+            MTApiFunctionalities mtApi = new MTApiFunctionalities();
+            HttpWebResponse httpResLogin = mtApi.LoginUser(mtUrl, username, password); 
+            JObject jsonResponse = mtApi.JsonParseHttpRes(httpResLogin);
+            string userId = jsonResponse["id"].ToString();
+            httpResLogin.Close();
+            HttpWebResponse httpResAdminLogin = mtApi.LoginUser(mtUrl, adminUsername, adminPassword); // Login as admin to get admin token to delete user
+            JObject jsonResponseAdminLogin = mtApi.JsonParseHttpRes(httpResAdminLogin);
+            string adminLoginToken = jsonResponseAdminLogin["token"].ToString();
+            httpResAdminLogin.Close();
+            HttpWebResponse httpResDel = mtApi.DeleteUser(mtUrl, userId, adminLoginToken);
+            httpResDel.Close();
         }
     }
 }
