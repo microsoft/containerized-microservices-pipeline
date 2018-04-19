@@ -164,6 +164,8 @@ Open a bash shell and execute deployCluster.sh
 cd /deployment
 ./deployCluster.sh
 ```
+# Securing secrets
+[Deploying secrets to production](SecretsDeployment.md)
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
