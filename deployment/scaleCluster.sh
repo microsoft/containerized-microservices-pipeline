@@ -7,23 +7,15 @@ set -x
 exec > >(tee "scaleCluster.txt")
 exec 2>&1
 
-# Cluster variables
-CLUSTER_NAME= # Add Desired Cluster Name
-RESOURCE_GROUP=$CLUSTER_NAME
-DNS_PREFIX=$CLUSTER_NAME
-NODE_COUNT= # Add desired node count
-
-# Validate that values have been set for required variables
-if [ -z "$CLUSTER_NAME" ]
-then
-      echo "\A required value in scaleCluster.sh is empty!!!!!!!!!!!!!"
-      exit 1
-fi
-
 ## -------
 # Import global variables
 . ./globalVariables.prod.sh
 
+RESOURCE_GROUP=$CLUSTER_NAME
+DNS_PREFIX=$CLUSTER_NAME
+NODE_COUNT= # Add desired node count
+
+## node-pool value should match the value in clusterDefinition.json
 acs-engine scale --subscription-id $AZURE_SUBSCRIPTION_ID \
     --resource-group $RESOURCE_GROUP  \
     --location $AZURE_LOCATION     \
