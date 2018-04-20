@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Web.Security;
 using Newtonsoft.Json.Linq;
 
 namespace MTApi
@@ -10,6 +11,20 @@ namespace MTApi
         public string loginApiRoute = "/api/login";
         public string accountApiRoute = "/api/account";
 
+        public JObject GenerateUserInfo()
+        {
+            dynamic userInfo = new JObject();
+            Guid guid = Guid.NewGuid();
+            userInfo.username = guid.ToString();
+            userInfo.password = Membership.GeneratePassword(12, 3);
+            userInfo.email = guid.ToString() + "@test.com";
+            return userInfo;
+        }
+
+        public string GenerateNewPassword()
+        {
+            return Membership.GeneratePassword(12, 3);
+        }
 
         public HttpWebResponse CreateUser(string mtUrl, string username, string password, string email)
         {

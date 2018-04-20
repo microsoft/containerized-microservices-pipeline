@@ -1,22 +1,21 @@
-﻿namespace WebAndLoadTests
-{
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Net;
-    using Microsoft.VisualStudio.TestTools.WebTesting;
-    using MTApi;
-    using Newtonsoft.Json.Linq;
-    using WebAndLoadTests.Properties;
+﻿using System.Collections.Generic;
+using System.Net;
+using Microsoft.VisualStudio.TestTools.WebTesting;
+using MTApi;
+using Newtonsoft.Json.Linq;
+using WebAndLoadTests.Properties;
 
+namespace WebAndLoadTests
+{
     public class ChangePasswordTest : WebTest
     {
         public string mtUrl = Settings.Default.MTUrl;
         public string adminUsername = Settings.Default.AdminUsername;
         public string adminPassword = Settings.Default.AdminPassword;
-        public string username = ""; // TODO: Add username
-        public string password = ""; // TODO: Add password
-        public string newPassword = ""; // TODO: Add newPassword
-        public string email = ""; // TODO: Add email
+        public string username = "";
+        public string password = "";
+        public string newPassword = "";
+        public string email = ""; 
         public string userId = "";
         public string userLoginToken = "";
 
@@ -33,6 +32,10 @@
             try
             {
                 MTApiFunctionalities mtApi = new MTApiFunctionalities();
+                JObject userInfo = mtApi.GenerateUserInfo();
+                username = userInfo["username"].ToString();
+                password = userInfo["password"].ToString();
+                email = userInfo["email"].ToString();
                 HttpWebResponse httpResCreate = mtApi.CreateUser(mtUrl, username, password, email); 
                 httpResCreate.Close();
                 HttpWebResponse httpResLogin = mtApi.LoginUser(mtUrl, username, password); 
@@ -57,6 +60,7 @@
             StringHttpBody requestChangePasswordBody = new StringHttpBody();
             requestChangePasswordBody.ContentType = "application/json";
             requestChangePasswordBody.InsertByteOrderMark = false;
+            newPassword = mtApi.GenerateNewPassword();
             requestChangePasswordBody.BodyString = "{ \"password\" : \"" + password + "\" , \"newPassword\" : \"" + newPassword + "\" }"; 
             requestChangePassword.Body = requestChangePasswordBody;
             yield return requestChangePassword;

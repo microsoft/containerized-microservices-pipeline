@@ -24,6 +24,6 @@
     </AgentRule>
   </Execution>
   <Properties>
-    <Property name="TestSettingsUIType" value="LoadTest" />
+    <Property name="TestSettingsUIType" value="UnitTest" />
   </Properties>
 </TestSettings>

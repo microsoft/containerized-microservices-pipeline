@@ -1,21 +1,20 @@
-﻿namespace WebAndLoadTests
-{
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Net;
-    using Microsoft.VisualStudio.TestTools.WebTesting;
-    using MTApi;
-    using Newtonsoft.Json.Linq;
-    using WebAndLoadTests.Properties;
+﻿using System.Collections.Generic;
+using System.Net;
+using Microsoft.VisualStudio.TestTools.WebTesting;
+using MTApi;
+using Newtonsoft.Json.Linq;
+using WebAndLoadTests.Properties;
 
+namespace WebAndLoadTests
+{
     public class LoginUserTest : WebTest
     {
         public string mtUrl = Settings.Default.MTUrl;
         public string adminUsername = Settings.Default.AdminUsername;
         public string adminPassword = Settings.Default.AdminPassword;
-        public string username = ""; // TODO: Add username
-        public string password = ""; // TODO: Add password
-        public string email = ""; // TODO: Add email
+        public string username = "";
+        public string password = "";
+        public string email = "";
         public string userId = "";
 
         public LoginUserTest()
@@ -31,6 +30,10 @@
             try
             {
                 MTApiFunctionalities mtApi = new MTApiFunctionalities();
+                JObject userInfo = mtApi.GenerateUserInfo();
+                username = userInfo["username"].ToString();
+                password = userInfo["password"].ToString();
+                email = userInfo["email"].ToString();
                 HttpWebResponse httpResCreate = mtApi.CreateUser(mtUrl, username, password, email); 
                 JObject jsonResponse = mtApi.JsonParseHttpRes(httpResCreate);
                 userId = jsonResponse["id"].ToString();
