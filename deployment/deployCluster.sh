@@ -89,7 +89,7 @@ echo Completed deployment of ARM template
 echo Starting to clean up ARM template resources
 rm ./clusterDefinition.temp.json
 rm -d -r ./_output
-echo Starting to clean up ARM template resources
+echo Completed clean up of ARM template resources
 
 ## -------
 ## Add ACR login credentials to k8 secret
