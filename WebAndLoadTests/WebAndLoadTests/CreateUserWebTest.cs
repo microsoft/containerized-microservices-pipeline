@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.WebTesting;
 using MTApi;
@@ -14,16 +12,34 @@ namespace WebAndLoadTests
         public string mtUrl = Settings.Default.MTUrl;
         public string adminUsername = Settings.Default.AdminUsername;
         public string adminPassword = Settings.Default.AdminPassword;
-        public string username = ""; // TODO: Add username
-        public string password = ""; // TODO: Add password
-        public string email = ""; // TODO: Add email
+        public string username = "";
+        public string password = "";
+        public string email = "";
 
         public CreateUserWebTest()
         {
             this.PreAuthenticate = true;
             this.Proxy = "default";
+            this.PreWebTest += SetUp;
             this.PostWebTest += TearDown;
         }
+
+        public void SetUp(object sender, PreWebTestEventArgs e)
+        {
+            try
+            {
+                MTApiFunctionalities mtApi = new MTApiFunctionalities();
+                JObject userInfo = mtApi.GenerateUserInfo();
+                username = userInfo["username"].ToString();
+                password = userInfo["password"].ToString();
+                email = userInfo["email"].ToString();
+            }
+            catch (WebException webExc)
+            {
+                Stop(); // Stop test on exception
+                Outcome = Outcome.Fail; // Fail web test due to exception
+            }
+}
 
         public override IEnumerator<WebTestRequest> GetRequestEnumerator()
         {
