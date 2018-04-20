@@ -10,7 +10,7 @@ This project is a reference solution for building out a full Production ready mi
 - Continuous Deployment (CD) via [VSTS](https://www.visualstudio.com/team-services/)
 - Containerized services hosted in Kubernetes (k8)
 - Secrets management via [Azure KeyVault](https://azure.microsoft.com/en-us/services/key-vault/), [k8 secrets](https://kubernetes.io/docs/concepts/configuration/secret/) and Hexodite
-- [Azure Active Directory Service Principal identities](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects) and least priveledge access policies
+- [Azure Active Directory Service Principal identities](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects) and least privilege access policies
 - [Helm chart](https://helm.sh/) k8 package deployments
 - [Azure Traffic Manager](https://azure.microsoft.com/en-us/services/traffic-manager/) DNS request routing
 - [Traefik ingress controller](https://github.com/kubernetes/charts/tree/master/stable/traefik) k8 traffic routing
@@ -164,8 +164,11 @@ Open a bash shell and execute deployCluster.sh
 cd /deployment
 ./deployCluster.sh
 ```
+
 # Securing secrets
+
 [Deploying secrets to production](SecretsDeployment.md)
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
