@@ -16,10 +16,11 @@ CLUSTER_NAME= # Add Desired Cluster Name
 AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
+MT_DNS_PREFIX= # Dns prefix for login app and service public endpoint
 
 ## -------
 # Validate that values have been set for required variables
-if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ]  || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ]
+if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ] || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ] || [ -z "$MT_DNS_PREFIX" ]
 then
       echo "\A required value in deployCluster.sh is empty!!!!!!!!!!!!!"
       exit 1
@@ -57,7 +58,7 @@ az role assignment create --assignee $ACS_SERVICE_PRINCIPAL_ID --scope $AZURE_CO
 
 ## -------
 # SP running in K8s can only read the secret
-az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME
+az keyvault set-policy --secret-permissions get --certificate-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME
 
 ## -------
 ## create kubernetes cluster
@@ -134,6 +135,12 @@ WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsof
 ## create Azure Traffic Manager endpoint for this cluster
 AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}'].dnsSettings.fqdn" -o tsv)
 az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
+
+# configure public dns name
+MT_IP_NAME=`az network public-ip list -g $RESOURCE_GROUP  --query "[?tags.service=='kube-system/traefik-ingress-service'].name" -o tsv`
+az network public-ip update -g $RESOURCE_GROUP -n $MT_IP_NAME --dns-name $MT_DNS_PREFIX --allocation-method Static
+MT_FQDN=`az network public-ip show -g $RESOURCE_GROUP -n $MT_IP_NAME --query dnsSettings.fqdn -o tsv`
+echo login app is public at $MT_FQDN
 
 ## -------
 # ACS cluster deployment and setup complete
