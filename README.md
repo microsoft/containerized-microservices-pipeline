@@ -10,7 +10,7 @@ This project is a reference solution for building out a full Production ready mi
 - Continuous Deployment (CD) via [VSTS](https://www.visualstudio.com/team-services/)
 - Containerized services hosted in Kubernetes (k8)
 - Secrets management via [Azure KeyVault](https://azure.microsoft.com/en-us/services/key-vault/), [k8 secrets](https://kubernetes.io/docs/concepts/configuration/secret/) and Hexodite
-- [Azure Active Directory Service Principal identities](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects) and least priveledge access policies
+- [Azure Active Directory Service Principal identities](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects) and least privilege access policies
 - [Helm chart](https://helm.sh/) k8 package deployments
 - [Azure Traffic Manager](https://azure.microsoft.com/en-us/services/traffic-manager/) DNS request routing
 - [Traefik ingress controller](https://github.com/kubernetes/charts/tree/master/stable/traefik) k8 traffic routing
@@ -35,8 +35,25 @@ An example cross platform middle tier api is provided as part of the solution, i
 
 ## Development Prerequisites
 
-### Homebrew
+### Mac - Homebrew
+
 [How to install homebrew](https://brew.sh/)
+
+### Windows - Powershell & Linux Subsystem
+
+[Installing Windows Powershell](https://docs.microsoft.com/en-us/powershell/scripting/setup/installing-windows-powershell?view=powershell-6)
+
+[Installing the Linux Subsystem on Windows](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+### Install Docker
+
+#### Install on Mac
+
+[Docker CE](https://docs.docker.com/docker-for-mac/install/)
+
+#### Install on Windows
+
+[Docker CE](https://docs.docker.com/docker-for-windows/install/)
 
 ### Install Azure CLI
 
@@ -56,19 +73,24 @@ Download and run [AZ Installer](https://aka.ms/InstallAzureCliWindows)
 ### Install Kubectl
 
 #### Install on Mac with Homebrew
+
 ```
 brew install kubectl
 ```
 
 #### Install on Windows with PowerShell
+
 ```
 Install-Script -Name install-kubectl -Scope CurrentUser -Force
 install-kubectl.ps1 [-DownloadLocation <path>]
 ```
+
 ### Install ACS Engine
+
 [Download and install ACS Engine](https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#install)
 
 ### Install JQ
+
 [Download and install JQ](https://stedolan.github.io/jq/download/)
 
 ## Deploying to an Azure Subscription for the first time
@@ -164,6 +186,11 @@ Open a bash shell and execute deployCluster.sh
 cd /deployment
 ./deployCluster.sh
 ```
+
+# Securing secrets
+
+[Deploying secrets to production](SecretsDeployment.md)
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
