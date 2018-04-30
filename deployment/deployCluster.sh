@@ -88,18 +88,11 @@ echo Completed deployment of ARM template
 
 echo Starting to clean up ARM template resources
 rm ./clusterDefinition.temp.json
-rm -d -r ./_output
-echo Starting to clean up ARM template resources
 
-## -------
-## Add ACR login credentials to k8 secret
-ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
-ACS_EMAIL=`az account show --query user.name -o tsv`
-
-kubectl create secret docker-registry acr-credentials --docker-server $ACR_URL --docker-email $ACS_EMAIL --docker-username=$ACS_SERVICE_PRINCIPAL_ID --docker-password $ACS_SERVICE_PRINCIPAL_PASSWORD
 
 ## -------
 ## Download Kubernetes Credentials and show cluster information
+chmod 700 cluster_rsa
 echo "----- You will need to enter the certificate password after the next command before it times out -----"
 sleep 15 # give the user time to prepare to enter the password
 scp -i ./cluster_rsa azureuser@$DNS_PREFIX.$AZURE_LOCATION.cloudapp.azure.com:.kube/config .
@@ -107,6 +100,13 @@ export KUBECONFIG=`pwd`/config
 kubectl config use-context $CLUSTER_NAME
 kubectl version
 kubectl cluster-info
+
+## -------
+## Add ACR login credentials to k8 secret
+ACR_URL=`az acr show --name $AZURE_CONTAINER_REGISTRY_NAME --query loginServer -o tsv`
+ACS_EMAIL=`az account show --query user.name -o tsv`
+
+kubectl create secret docker-registry acr-credentials --docker-server $ACR_URL --docker-email $ACS_EMAIL --docker-username=$ACS_SERVICE_PRINCIPAL_ID --docker-password $ACS_SERVICE_PRINCIPAL_PASSWORD
 
 ## ------
 ## Helm
