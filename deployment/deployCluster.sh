@@ -16,10 +16,11 @@ CLUSTER_NAME= # Add Desired Cluster Name
 AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
+MT_DNS_PREFIX= # Dns prefix for login app and service public endpoint
 
 ## -------
 # Validate that values have been set for required variables
-if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ]  || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ]
+if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ] || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ] 
 then
       echo "\A required value in deployCluster.sh is empty!!!!!!!!!!!!!"
       exit 1
@@ -57,7 +58,7 @@ az role assignment create --assignee $ACS_SERVICE_PRINCIPAL_ID --scope $AZURE_CO
 
 ## -------
 # SP running in K8s can only read the secret
-az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME
+az keyvault set-policy --secret-permissions get --certificate-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME
 
 ## -------
 ## create kubernetes cluster
