@@ -20,7 +20,7 @@ MT_DNS_PREFIX= # Dns prefix for login app and service public endpoint
 
 ## -------
 # Validate that values have been set for required variables
-if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ] || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ] || [ -z "$MT_DNS_PREFIX" ]
+if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ] || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ] 
 then
       echo "\A required value in deployCluster.sh is empty!!!!!!!!!!!!!"
       exit 1
@@ -135,12 +135,6 @@ WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsof
 ## create Azure Traffic Manager endpoint for this cluster
 AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}'].dnsSettings.fqdn" -o tsv)
 az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
-
-# configure public dns name
-MT_IP_NAME=`az network public-ip list -g $RESOURCE_GROUP  --query "[?tags.service=='kube-system/traefik-ingress-service'].name" -o tsv`
-az network public-ip update -g $RESOURCE_GROUP -n $MT_IP_NAME --dns-name $MT_DNS_PREFIX --allocation-method Static
-MT_FQDN=`az network public-ip show -g $RESOURCE_GROUP -n $MT_IP_NAME --query dnsSettings.fqdn -o tsv`
-echo login app is public at $MT_FQDN
 
 ## -------
 # ACS cluster deployment and setup complete
