@@ -4,7 +4,7 @@
 
 If you are setting up a new micro-service pipeline from scratch, you will need to deploy all of the foundational, shared Azure resources that are necessary to support the k8 solution in Azure. All of these resources are deployed via the inception.sh script provided in this solution.
 
-The following resources are deployed by inception.sh:
+The following resources are deployed by [inception.sh](deployment/inception.sh):
 
 - Azure Resource Group for all common resources
 - Azure Traffic Manager profile
@@ -21,7 +21,7 @@ The following resources are deployed by inception.sh:
 
 #### Step 1: configure environment variables
 
-Open /deployment/globalVariables.sh and enter values for the deployment.
+Open [globalVariables.prod.sh](deployment/globalVariables.prod.sh) and enter values for the deployment.
 
 #### Step 2: Configure SSH keys
 
@@ -30,9 +30,9 @@ A private / public certificate key pair is required to setup the k8 cluster so c
 - Generate new [SSH keys](https://github.com/Azure/acs-engine/blob/master/docs/ssh.md#ssh-key-generation/) and save it in /deployment as `cluster_rsa.pub` and `cluster_rsa`
 - Update `clusterDefinition.json` with the public key contained in `cluster_rsa.pub`. `keyData` must contain the public portion of an SSH key (e.g. 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABA....')
 
-#### Step 3: Execute inception.sh
+#### Step 3: Execute [inception.sh](deployment/inception.sh)
 
-Open a bash shell and execute inception.sh
+Open a bash shell and execute [inception.sh](deployment/inception.sh)
 
 ```bash
 cd /deployment
@@ -52,9 +52,9 @@ AZURE_TRAFFIC_MANAGER_PROFILE_NAME
 
 ## Deploying a k8 cluster
 
-Multiple k8 clusters can be deployed, each in their own resource group and with their own endpoint. Each time you run deployCluster.sh a new resource group will be provisioned and all resources specific for that cluster will be deployed.
+Multiple k8 clusters can be deployed, each in their own resource group and with their own endpoint. Each time you run [deployCluster.sh](deployment/deployCluster.sh) a new resource group will be provisioned and all resources specific for that cluster will be deployed.
 
-The following resources are deployed by deployCluster.sh:
+The following resources are deployed by [deployCluster.sh](deployment/deployCluster.sh):
 
 - Azure Resource Group specific to the cluster
 - Service Principal to serve as the cluster identity
@@ -67,7 +67,7 @@ The following resources are deployed by deployCluster.sh:
 The following diagram shows the **physical artifacts** created in the resource group.
 ![](./deployment/kubernetes-resource-group.png)
 
-### Step 1: Edit deployCluster.sh
+### Step 1: Edit [deployCluster.sh](deployment/deployCluster.sh)
 
 Fill out the following values....
 
@@ -85,9 +85,9 @@ K8_DEPLOYMENT_KEYVAULT_NAME=
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME=
 ```
 
-### Execute deployCluster.sh
+### Execute [deployCluster.sh](deployment/deployCluster.sh)
 
-Open a bash shell and execute deployCluster.sh
+Open a bash shell and execute [deployCluster.sh](deployment/deployCluster.sh)
 
 ```bash
 cd /deployment
