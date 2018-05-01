@@ -16,14 +16,14 @@ namespace MTApi
             dynamic userInfo = new JObject();
             Guid guid = Guid.NewGuid();
             userInfo.username = guid.ToString();
-            userInfo.password = Membership.GeneratePassword(12, 3);
+            userInfo.password = GenerateNewPassword();
             userInfo.email = guid.ToString() + "@test.com";
             return userInfo;
         }
 
         public string GenerateNewPassword()
         {
-            return Membership.GeneratePassword(12, 3);
+            return Membership.GeneratePassword(12, 0);
         }
 
         public HttpWebResponse CreateUser(string mtUrl, string username, string password, string email)
