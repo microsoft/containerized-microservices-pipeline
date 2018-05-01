@@ -2,7 +2,7 @@
 
 This project is a reference solution for building out a full Production ready micro-services solution. This solution is hosted in Kubernetes running on Azure. All apps and services have a small (micro-service) footprint of responsibilities and are run in Docker containers. This solution is meant to be a best practice example of a micro-service development and hosting solution ready for Production.
 
-## Solution Highlights
+## Solution Overview
 
 - Cross platform solution (runs on Linux, Windows and Mac)
 - Source repositories hosted in Git
@@ -18,6 +18,8 @@ This project is a reference solution for building out a full Production ready mi
 - Azure k8 cluster deployment via [ACS Engine](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/features.md)
 - Application Insights telemetry
 - Log Analytics k8 cluster health dashboard
+
+![Solution Architecture](SolutionArchitecture.png)
 
 ## Included in this Solution
 
