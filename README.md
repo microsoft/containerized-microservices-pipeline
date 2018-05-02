@@ -72,6 +72,9 @@ An example cross platform middle tier api is provided as part of the solution, i
 
 7. JQ
     - [Download and install JQ](https://stedolan.github.io/jq/download/)
+8. Visual Studio
+	- [For web and load testing](https://github.com/Microsoft/containerized-microservices-pipeline/tree/master/WebAndLoadTests)
+	- [Download and install Visual Studio](https://www.visualstudio.com/downloads/)
 
 ## Deploying Azure Resources and ACS Kubernetes Cluster
 
