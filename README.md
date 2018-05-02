@@ -81,6 +81,10 @@ An example cross platform middle tier api is provided as part of the solution, i
 
 [Deploying secrets to production](SecuringSecrets.md)
 
+## Log Analyticss
+
+[Integrating Log Analytics](deployment/LogAnalytics.md)
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
