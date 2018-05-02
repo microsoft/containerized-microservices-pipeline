@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "1.0"
-description: Containzerized App Helm chart for Kubernetes
-name: containerized-microservices-pipeline-app
-version: 0.1.0

@@ -52,10 +52,6 @@ WSID=$(az resource show --resource-group resourcegroupname  --resource-type Micr
 #helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=<key-value> stable/msoms
 ```
 
-## Deploy App Helm Chart onto Cluster
-1. Ensure Azure Container Registry Credentials are deployed onto your cluster
-2. Run ```helm install ./kubernetes/containerized-microservices-pipeline-app --name canary-containerized-microservices-pipeline-app```
-
 ## Deploy Ingress Resource
 1. Ensure traefik is already installed on your cluster ```kubectl get pods -n kube-system```
 2. Ensure the applications you are using the ingress router names are correctly spelled in the ```values.yaml``` file.
