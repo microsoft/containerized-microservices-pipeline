@@ -65,7 +65,7 @@ The following resources are deployed by [deployCluster.sh](deployment/deployClus
 - Azure Traffic Manager endpoint to cluster
 
 The following diagram shows the **physical artifacts** created in the resource group.
-![](./deployment/kubernetes-resource-group.png)
+![Kubernetes Resources](./deployment/kubernetes-resource-group.png)
 
 ### Step 1: Edit [deployCluster.sh](deployment/deployCluster.sh)
 

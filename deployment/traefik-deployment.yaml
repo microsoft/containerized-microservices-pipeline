@@ -32,6 +32,71 @@ spec:
         - --api
         - --kubernetes
         - --logLevel=INFO
+        - storeconfig
+        - --configfile=/config/traefik.toml
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+          readOnly: true
+        - name: config
+          mountPath: /config
+        ports:
+          - containerPort: 80
+          - containerPort: 443
+          - containerPort: 8080
+      initContainers:
+      - name: keyvault-agent
+        image: acrmicroserviceswestus.azurecr.io/hexadite:latest # will be {{ .Values... }} in Helm charts
+        env:
+        - name: VAULT_BASE_URL
+          value: https://microservices-deploy-kv.vault.azure.net # will be {{ .Values... }} in Helm charts
+        - name: SERVICE_PRINCIPLE_FILE_PATH
+          value: /host/azure.json
+        - name: SECRETS_FOLDER
+          value: /secrets
+        - name: SECRETS_KEYS
+          value: mt-aad-password;mt-ssl-cert::mt-ssl-cert.pem:mt-ssl-key.pem
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+        - name: host-sp
+          mountPath: /host/azure.json
+          readOnly: true
+      imagePullSecrets:
+        - name: acr-credentials
+      volumes:
+      - name: config
+        configMap:
+          name: traefik-conf
+      - name: secrets
+        emptyDir:
+          # we want the secrets to reside only in-memory
+          medium: Memory
+      - name: host-sp
+        hostPath:
+          # this file contains the cluster service-principal, it exists on every node by default
+          path: /etc/kubernetes/azure.json
+          #type: File # commented out because current cubctl doesn't understand it.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: kube-system
+  name: traefik-conf
+data:
+  traefik.toml: |
+    defaultEntryPoints = ["http","https"]
+    [entryPoints]
+      [entryPoints.http]
+      address = ":80"
+        [entryPoints.http.redirect]
+          entryPoint = "https"
+      [entryPoints.https]
+      address = ":443"
+        [entryPoints.https.tls]
+          [[entryPoints.https.tls.certificates]]
+          CertFile = "/secrets/certs_keys/mt-ssl-cert.pem"
+          KeyFile = "/secrets/certs_keys/mt-ssl-key.pem"
 ---
 kind: Service
 apiVersion: v1
@@ -45,6 +110,9 @@ spec:
     - protocol: TCP
       port: 80
       name: web
+    - protocol: TCP
+      port: 443
+      name: https
     - protocol: TCP
       port: 8080
       name: admin
