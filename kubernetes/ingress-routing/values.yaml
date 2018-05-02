@@ -6,5 +6,5 @@ ingress:
   - path: /api
     serviceName: login-service-chart-service
     servicePort: 80
-  - serviceName: login-app-chart-service
+  - serviceName: login-app-production-svc
     servicePort: 80
