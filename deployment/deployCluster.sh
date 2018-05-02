@@ -125,6 +125,11 @@ kubectl apply -f traefik-rbac.yaml
 # Deploy traefik using the service account defined in rbac roles
 kubectl apply -f traefik-deployment.yaml
 
+## -------
+## create Azure Traffic Manager endpoint for this cluster
+AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}'].dnsSettings.fqdn" -o tsv)
+az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
+
 ## ------
 ## OMS Agent
 WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsoft.OperationalInsights/workspaces --name containerized-loganalyticsWS | grep customerId | sed -e 's/.*://')
@@ -132,9 +137,9 @@ WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsof
 # TODO: populate $KEYVAL parameter
 
 ## -------
-## create Azure Traffic Manager endpoint for this cluster
-AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}'].dnsSettings.fqdn" -o tsv)
-az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
+## create ConfigMap for this cluster
+kubectl delete configmap configs
+kubectl create configmap configs --from-file=configs.properties --from-literal=MtConnectionString=$MT_CONNECTION_STRING
 
 ## -------
 # ACS cluster deployment and setup complete

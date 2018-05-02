@@ -2,14 +2,14 @@
 
 This project is a reference solution for building out a full Production ready micro-services solution. This solution is hosted in Kubernetes running on Azure. All apps and services have a small (micro-service) footprint of responsibilities and are run in Docker containers. This solution is meant to be a best practice example of a micro-service development and hosting solution ready for Production.
 
-## Solution Highlights
+## Solution Overview
 
 - Cross platform solution (runs on Linux, Windows and Mac)
 - Source repositories hosted in Git
 - Continuous Integration (CI) including unit & integration tests via [VSTS](https://www.visualstudio.com/team-services/) (Visual Studio Team Services)
 - Continuous Deployment (CD) via [VSTS](https://www.visualstudio.com/team-services/)
 - Containerized services hosted in Kubernetes (k8)
-- Secrets management via [Azure KeyVault](https://azure.microsoft.com/en-us/services/key-vault/), [k8 secrets](https://kubernetes.io/docs/concepts/configuration/secret/) and Hexodite
+- Secrets management via [Azure KeyVault](https://azure.microsoft.com/en-us/services/key-vault/), [k8 secrets](https://kubernetes.io/docs/concepts/configuration/secret/) and [Hexadite](https://github.com/Hexadite/acs-keyvault-agent)
 - [Azure Active Directory Service Principal identities](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects) and least privilege access policies
 - [Helm chart](https://helm.sh/) k8 package deployments
 - [Azure Traffic Manager](https://azure.microsoft.com/en-us/services/traffic-manager/) DNS request routing
@@ -18,6 +18,8 @@ This project is a reference solution for building out a full Production ready mi
 - Azure k8 cluster deployment via [ACS Engine](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/features.md)
 - Application Insights telemetry
 - Log Analytics k8 cluster health dashboard
+
+![Solution Architecture](SolutionArchitecture.png)
 
 ## Included in this Solution
 

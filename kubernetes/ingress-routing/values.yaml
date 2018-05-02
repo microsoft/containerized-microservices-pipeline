@@ -6,27 +6,5 @@ ingress:
   - path: /api
     serviceName: login-service-chart-service
     servicePort: 80
-  - serviceName: login-app-chart-service
+  - serviceName: login-app-production-svc
     servicePort: 80
-
-configs:
-  - name: TEST_VAL_KEY
-    key: testdata
-  - name: CONNECTION_STRING
-    key: ConnectionString
-  - name: APP_INSIGHTS_KEY
-    key: ApplicationInsightsKey
-  - name: JWT_KEY
-    key: JwtKey
-  - name: JWT_ISSUER
-    key: JwtIssuer
-  - name: JWT_AUDIENCE
-    key: JwtAudience
-  - name: CORS_ORIGINS
-    key: CorsOrigins
-  - name: SECRETS_VAULT_URL
-    key: SecretsVaultUrl
-  - name: AAD_PASS_FILE_PATH
-    key: AadPasswordFilePath
-  - name: AAD_APP_ID
-    key: AadAppId
