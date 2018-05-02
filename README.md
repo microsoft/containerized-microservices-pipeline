@@ -16,8 +16,8 @@ This project is a reference solution for building out a full Production ready mi
 - [Traefik ingress controller](https://github.com/kubernetes/charts/tree/master/stable/traefik) k8 traffic routing
 - [Canary deployments](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#canary-deployments)
 - Azure k8 cluster deployment via [ACS Engine](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/features.md)
-- Application Insights telemetry
-- Log Analytics k8 cluster health dashboard
+- [Application Insights](https://azure.microsoft.com/en-us/services/application-insights/) telemetry
+- [Log Analytics](https://azure.microsoft.com/en-us/services/log-analytics/) k8 cluster health dashboard
 
 ![Solution Architecture](SolutionArchitecture.png)
 
