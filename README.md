@@ -9,7 +9,7 @@ This project is a reference solution for building out a full Production ready mi
 - Continuous Integration (CI) including unit & integration tests via [VSTS](https://www.visualstudio.com/team-services/) (Visual Studio Team Services)
 - Continuous Deployment (CD) via [VSTS](https://www.visualstudio.com/team-services/)
 - Containerized services hosted in Kubernetes (k8)
-- Secrets management via [Azure KeyVault](https://azure.microsoft.com/en-us/services/key-vault/), [k8 secrets](https://kubernetes.io/docs/concepts/configuration/secret/) and Hexodite
+- Secrets management via [Azure KeyVault](https://azure.microsoft.com/en-us/services/key-vault/), [k8 secrets](https://kubernetes.io/docs/concepts/configuration/secret/) and [Hexadite](https://github.com/Hexadite/acs-keyvault-agent)
 - [Azure Active Directory Service Principal identities](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects) and least privilege access policies
 - [Helm chart](https://helm.sh/) k8 package deployments
 - [Azure Traffic Manager](https://azure.microsoft.com/en-us/services/traffic-manager/) DNS request routing
