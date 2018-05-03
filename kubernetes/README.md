@@ -44,4 +44,4 @@ tiller-deploy-677436516-cq73w                   1/1       Running   0          2
 ## Deploy Ingress Resource
 1. Ensure traefik is already installed on your cluster ```kubectl get pods -n kube-system```
 2. Ensure the applications you are using the ingress router names are correctly spelled in the ```values.yaml``` file.
-2. Run ```helm install ./kubernetes/ingress-routing```
+2. Run ```helm install ./kubernetes/ingress-routing --name cluster```
