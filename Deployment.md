@@ -36,7 +36,7 @@ Open a bash shell and execute [inception.sh](deployment/inception.sh)
 
 ```bash
 cd /deployment
-chmod 775 *
+chmod 775 *.sh
 ./inception.sh
 ```
 
