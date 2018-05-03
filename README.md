@@ -50,7 +50,9 @@ An example cross platform middle tier api is provided as part of the solution, i
     - [Installing the Linux Subsystem on Windows](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 3. Docker
     - [Install on Mac](https://docs.docker.com/docker-for-mac/install/)
-    - [Install on Windows](https://docs.docker.com/docker-for-windows/install/)
+    - [Install on Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows)
+        - Select the "Use Windows containers ..." option
+        - After rebooting, you will be prompted to login to Docker.  You can create a personal username and pasword here.        
 4. Azure CLI
     - Install Azure CLI on Mac with Homebrew
         ```bash
@@ -58,7 +60,7 @@ An example cross platform middle tier api is provided as part of the solution, i
         brew install azure-cli
         ```
     - Install Azure CLI on Windows: [Download and run AZ Installer](https://aka.ms/InstallAzureCliWindows)
-    - [For more information on installing Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+        - [For more information on installing Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 5. kubectl
     - Install kubectl on Mac with Homebrew
         ```bash
@@ -67,13 +69,17 @@ An example cross platform middle tier api is provided as part of the solution, i
     - Install kubectl on Windows with PowerShell
         ```powershell
         Install-Script -Name install-kubectl -Scope CurrentUser -Force
-        install-kubectl.ps1 [-DownloadLocation <path>]
+        install-kubectl.ps1 -DownloadLocation <path>
+            - where <path> is the location you wish to install it. 
+            - you may be prompted to install a new version of nuget.  do it. 
         ```
 6. ACS Engine
     - [Download and install ACS Engine](https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#install)
+        - be sure and put (or add) acs-engine.exe to your $PATH
 
 7. JQ
     - [Download and install JQ](https://stedolan.github.io/jq/download/)
+        - note: the jq-win64.exe is *not* an installation program. it is the uncompressed EXE.  Copy it to someplace on your $PATH
 
 ## Deploying Azure Resources and ACS Kubernetes Cluster
 
