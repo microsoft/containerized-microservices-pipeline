@@ -16,8 +16,8 @@ This project is a reference solution for building out a full Production ready mi
 - [Traefik ingress controller](https://github.com/kubernetes/charts/tree/master/stable/traefik) k8 traffic routing
 - [Canary deployments](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#canary-deployments)
 - Azure k8 cluster deployment via [ACS Engine](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/features.md)
-- Application Insights telemetry
-- Log Analytics k8 cluster health dashboard
+- [Application Insights](https://azure.microsoft.com/en-us/services/application-insights/) telemetry
+- [Log Analytics](https://azure.microsoft.com/en-us/services/log-analytics/) k8 cluster health dashboard
 
 ![Solution Architecture](SolutionArchitecture.png)
 
@@ -82,6 +82,14 @@ An example cross platform middle tier api is provided as part of the solution, i
 ## Securing Secrets
 
 [Deploying secrets to production](SecuringSecrets.md)
+
+## Log Analyticss
+
+[Integrating Log Analytics](deployment/LogAnalytics.md)
+
+## Repository Structure and Strategy
+
+We have one repository for the front end solution, one for our middle tier, and one common repository for deployment scripts. Because we are dealing with microservices, this approach allows the project to be both modular and scalable. The smaller codebases help developers contribute with faster execution and innovate rapidly due to fewer merge conflicts and clear ownership. Additionally, it allows the project to take full advantage of helm charts, helping control Kubernetes objects and application versioning. Using this structure as a reference solution, it is recommended that each additional microservice uses separate repositories for each of its respective services.  
 
 ## Contributing
 

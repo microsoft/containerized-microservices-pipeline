@@ -27,8 +27,7 @@ Open [globalVariables.prod.sh](deployment/globalVariables.prod.sh) and enter val
 
 A private / public certificate key pair is required to setup the k8 cluster so client dev and ops engineers can connect to the cluster after deployment.
 
-- Generate new [SSH keys](https://github.com/Azure/acs-engine/blob/master/docs/ssh.md#ssh-key-generation/) and save it in /deployment as `cluster_rsa.pub` and `cluster_rsa`
-- Update `clusterDefinition.json` with the public key contained in `cluster_rsa.pub`. `keyData` must contain the public portion of an SSH key (e.g. 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABA....')
+- Generate new [SSH keys](https://github.com/Azure/acs-engine/blob/master/docs/ssh.md#ssh-key-generation/) and save it in /deployment as `cluster_rsa.pub` and `cluster_rsa`. The public portion of the SSH key will be added in `clusterDefinition.json` later.
 
 #### Step 3: Execute [inception.sh](deployment/inception.sh)
 
@@ -36,7 +35,7 @@ Open a bash shell and execute [inception.sh](deployment/inception.sh)
 
 ```bash
 cd /deployment
-chmod 775 *
+chmod 775 *.sh
 ./inception.sh
 ```
 
@@ -47,7 +46,6 @@ K8_DEPLOYMENT_KEYVAULT_NAME
 AZURE_CONTAINER_REGISTRY_NAME
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME
 MT_CONNECTION_STRING
-AZURE_TRAFFIC_MANAGER_PROFILE_NAME
 ```
 
 ## Deploying a k8 cluster

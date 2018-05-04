@@ -20,6 +20,7 @@ CLUSTER_NAME= # Add Desired Cluster Name
 AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
+MT_CONNECTION_STRING= # Middle tier SQL connection string
 
 ## -------
 # Validate that values have been set for required variables
@@ -62,6 +63,7 @@ az keyvault set-policy --secret-permissions get --certificate-permissions get --
 ## -------
 ## create kubernetes cluster
 DNS_PREFIX=$CLUSTER_NAME
+SSH_PUB_KEY_DATA=$(<cluster_rsa.pub)
 
 # prepare the cluster deployment file for ACS Engine
 echo Starting update of cluster definition json file
@@ -69,34 +71,27 @@ CLUSTER_DEFINITION=$(<clusterDefinition.json)
 CLUSTER_DEFINITION=$(jq --arg id $ACS_SERVICE_PRINCIPAL_ID '.properties.servicePrincipalProfile.clientId=$id' <<< "$CLUSTER_DEFINITION")
 CLUSTER_DEFINITION=$(jq --arg secret $ACS_SERVICE_PRINCIPAL_PASSWORD '.properties.servicePrincipalProfile.secret=$secret' <<< "$CLUSTER_DEFINITION")
 CLUSTER_DEFINITION=$(jq --arg dnsPrefix $DNS_PREFIX '.properties.masterProfile.dnsPrefix=$dnsPrefix' <<< "$CLUSTER_DEFINITION")
+CLUSTER_DEFINITION=$(jq --arg ssh_pub_key_data "$SSH_PUB_KEY_DATA" '.properties.linuxProfile.ssh.publicKeys[0].keyData=$ssh_pub_key_data' <<< "$CLUSTER_DEFINITION")
 echo $CLUSTER_DEFINITION > clusterDefinition.temp.json
 echo Updated cluster definition json file
 
-# generate the ARM template
-echo Starting generation of ARM template
-acs-engine generate ./clusterDefinition.temp.json
-echo Completed generation of ARM template
-
-# deploy the ARM template
-echo Starting deployment of ARM template
-az group deployment create \
-    --name acs-engine-cluster \
-    --resource-group $RESOURCE_GROUP \
-    --template-file ./_output/$DNS_PREFIX/azuredeploy.json \
-    --parameters ./_output/$DNS_PREFIX/azuredeploy.parameters.json
-echo Completed deployment of ARM template
+# deploy Kubernetes cluster with acs-engine
+echo Starting deployment of Kubernetes cluster using acs-engine
+acs-engine deploy \
+    --subscription-id $AZURE_SUBSCRIPTION_ID \
+    --resource-group $RESOURCE_GROUP  \
+    --location $AZURE_LOCATION \
+    --api-model ./clusterDefinition.temp.json
+echo Completed deployment of Kubernetes cluster
 
 echo Starting to clean up ARM template resources
 rm ./clusterDefinition.temp.json
 
-
 ## -------
 ## Download Kubernetes Credentials and show cluster information
 chmod 700 cluster_rsa
-echo "----- You will need to enter the certificate password after the next command before it times out -----"
-sleep 15 # give the user time to prepare to enter the password
-scp -i ./cluster_rsa azureuser@$DNS_PREFIX.$AZURE_LOCATION.cloudapp.azure.com:.kube/config .
-export KUBECONFIG=`pwd`/config
+KUBECONFIG=`pwd`/_output/$CLUSTER_NAME/kubeconfig/kubeconfig.$AZURE_LOCATION.json
+export KUBECONFIG
 kubectl config use-context $CLUSTER_NAME
 kubectl version
 kubectl cluster-info
@@ -138,7 +133,7 @@ WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsof
 ## -------
 ## create ConfigMap for this cluster
 kubectl delete configmap configs
-kubectl create configmap configs --from-file=configs.properties --from-literal=MtConnectionString=$MT_CONNECTION_STRING
+kubectl create configmap configs --from-env-file=configs.properties
 
 ## -------
 # ACS cluster deployment and setup complete
