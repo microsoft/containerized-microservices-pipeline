@@ -83,6 +83,10 @@ An example cross platform middle tier api is provided as part of the solution, i
 
 [Deploying secrets to production](SecuringSecrets.md)
 
+## Repository Structure and Strategy
+
+We have one repository for the front end solution, one for our middle tier, and one common repository for deployment scripts. Because we are dealing with microservices, this approach allows the project to be both modular and scalable. The smaller codebases help developers contribute with faster execution and innovate rapidly due to fewer merge conflicts and clear ownership. Additionally, it allows the project to take full advantage of helm charts, helping control Kubernetes objects and application versioning. Using this structure as a reference solution, it is recommended that each additional microservice uses separate repositories for each of its respective services.  
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
