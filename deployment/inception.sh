@@ -58,7 +58,7 @@ docker build . -t ${ACR_URL}/hexadite:latest
 docker login -u $ACR_USERNAME -p $ACR_PASSWORD $ACR_URL
 docker push ${ACR_URL}/hexadite:latest
 cd ..
-rm -r acs-keyvault-agent
+rm -rf acs-keyvault-agent
 
 ## -------
 # Create App Insights
@@ -69,10 +69,20 @@ echo ........ Creating App Insights
 # Create OMS Workspace
 echo ........ Creating OMS Workspace
 K8_DEPLOYMENT_DIAGSA_NAME="${PROJECT_NAME}diagsa"
+
+# Generate log analytics parameters file
+LOG_ANALYTICS_OMS_PARAMS=$(<logAnalyticsOms.parameters.json)
+LOG_ANALYTICS_OMS_PARAMS=$(jq --arg workspaceName $PROJECT_NAME-$AZURE_LOCATION-ws '.parameters.workspaceName.value=$workspaceName' <<< "$LOG_ANALYTICS_OMS_PARAMS")
+LOG_ANALYTICS_OMS_PARAMS=$(jq --arg storageAccountName $K8_DEPLOYMENT_DIAGSA_NAME '.parameters.applicationDiagnosticsStorageAccountName.value=$storageAccountName' <<< "$LOG_ANALYTICS_OMS_PARAMS")
+LOG_ANALYTICS_OMS_PARAMS=$(jq --arg resourceGroup $COMMON_RESOURCE_GROUP '.parameters.applicationDiagnosticsStorageAccountResourceGroup.value=$resourceGroup' <<< "$LOG_ANALYTICS_OMS_PARAMS")
+echo $LOG_ANALYTICS_OMS_PARAMS > logAnalyticsOms.parameters.temp.json
+
 az storage account delete --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --yes
-az storage account create --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --location eastus --sku Standard_LRS
+az storage account create --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION --sku Standard_LRS
 az group deployment delete --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS"
-az group deployment create --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS" --template-file logAnalyticsOms.json  --parameters @logAnalyticsOms.parameters.json
+az group deployment create --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS" --template-file logAnalyticsOms.json  --parameters @logAnalyticsOms.parameters.temp.json
+
+rm ./logAnalyticsOms.parameters.temp.json
 
 ## -------
 # Create the middle tier service
