@@ -139,7 +139,7 @@ WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsof
 ## -------
 ## create ConfigMap for this cluster
 kubectl delete configmap configs
-kubectl create configmap configs --from-file=configs.properties --from-literal=MtConnectionString=$MT_CONNECTION_STRING
+kubectl create configmap configs --from-env-file=configs.properties
 
 ## -------
 # ACS cluster deployment and setup complete
