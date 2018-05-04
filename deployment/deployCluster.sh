@@ -130,11 +130,6 @@ WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsof
 # TODO: populate $KEYVAL parameter
 
 ## -------
-## create ConfigMap for this cluster
-kubectl delete configmap configs
-kubectl create configmap configs --from-env-file=configs.properties
-
-## -------
 # ACS cluster deployment and setup complete
 echo ........ "ACS cluster deployment and setup complete. All resources deployed to the following resource group."
 echo RESOURCE_GROUP=$RESOURCE_GROUP
