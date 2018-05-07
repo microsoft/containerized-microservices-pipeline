@@ -51,8 +51,8 @@ An example cross platform middle tier api is provided as part of the solution, i
 3. Docker
     - [Install on Mac](https://docs.docker.com/docker-for-mac/install/)
     - [Install on Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows)
-        - Select the "Use Windows containers ..." option
-        - After rebooting, you will be prompted to login to Docker.  You can create a personal username and pasword here.        
+        - DO NOT select the "Use Windows containers ..." option.  The front-end application (containerized-microservices-pipeline-app) has a dependency on Linux containers.
+        - After rebooting, you will be prompted to login to Docker.  You can create a personal username and pasword here.
 4. Azure CLI
     - Install Azure CLI on Mac with Homebrew
         ```bash
