@@ -46,16 +46,16 @@ spec:
           - containerPort: 8080
       initContainers:
       - name: keyvault-agent
-        image: acrmicroserviceswestus.azurecr.io/hexadite:latest # will be {{ .Values... }} in Helm charts
+        image: {{ .Values.HexaditeImage }} # acrmicroserviceswestus.azurecr.io/hexadite:latest 
         env:
         - name: VAULT_BASE_URL
-          value: https://microservices-deploy-kv.vault.azure.net # will be {{ .Values... }} in Helm charts
+          value: {{ .Values.DeploymentSecretsKeyVaultUrl }} # https://microservices-deploy-kv.vault.azure.net 
         - name: SERVICE_PRINCIPLE_FILE_PATH
           value: /host/azure.json
         - name: SECRETS_FOLDER
           value: /secrets
         - name: SECRETS_KEYS
-          value: mt-aad-password;mt-ssl-cert::mt-ssl-cert.pem:mt-ssl-key.pem
+          value: mt-ssl-cert::mt-ssl-cert.pem:mt-ssl-key.pem
         volumeMounts:
         - name: secrets
           mountPath: /secrets

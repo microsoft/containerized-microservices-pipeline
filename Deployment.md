@@ -48,6 +48,13 @@ AZURE_TRAFFIC_MANAGER_PROFILE_NAME
 MT_CONNECTION_STRING
 ```
 
+You will need an SSL certificate protecting the HTTP requests with the users passwords to the Middle Tier Login Service.
+
+Specify the path to the ssl certificate .pfx file and the password protecting the .pfx in deployCluster.sh:
+
+SSL_CERT_FILE_PATH=
+SSL_PASSWORD=
+
 ## Deploying a k8 cluster
 
 Multiple k8 clusters can be deployed, each in their own resource group and with their own endpoint. Each time you run [deployCluster.sh](deployment/deployCluster.sh) a new resource group will be provisioned and all resources specific for that cluster will be deployed.
