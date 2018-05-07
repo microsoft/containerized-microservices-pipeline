@@ -16,7 +16,7 @@ The feature developer will submit their feature branch and request a `pull reque
 
 As the feature developer begins making iterations, each additional update to the feature branch will result in a PR build. Some typical steps in this build involve testing, building, and linting the code to ensure no regressions were introduced.
 
-Both parties will continue to iterate on this pull request until both parties have reached an agreement. Interested developers will provide their approval.
+Both parties will continue to iterate on this pull request until they have reached an agreement. Interested developers will provide their approval.
 
 ### Continuous Integration
 
@@ -30,14 +30,14 @@ example:
 1.0.52
 ```
 
-The docker image will be published to the connecting azure container registry using the semantic version as the image tag.
+The docker image will be published to the associated azure container registry using the semantic version as the image tag.
 
 Once the image is published, the helm chart that is responsible for deploying these resources will be published as a `build artifact`.
 
 ### Continuous Deployment
 
-On every successful build, continuous delivery is kicked off. Our reference architecture supports a `canary` and `stable` release.
+On every successful build, continuous delivery is kicked off. Our reference architecture supports a `canary` and `stable` releases.
 
-`Canary` releases deployed to the cluster on each successful build. This will ensure that changes are constantly delivered and high deployment velocity is available.
+`Canary` releases are deployed to the cluster on each successful build. This will ensure that changes are constantly delivered and high deployment velocity is available.
 
 `Stable` releases are typically a couple versions behind `canary` and the images are deemed stable for production. This will ensure that changes are highly available. Our solution requires an administrator to sign off on `stable` deployments. Rollbacks are easily accessible since each build is versioned.
