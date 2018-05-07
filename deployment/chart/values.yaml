@@ -2,11 +2,5 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-spec:
-  template:
-    metadata:
-    spec:
-      initContainers:
-      - image: acrmicroserviceswestus.azurecr.io/hexadite:latest 
-        env:
-        - value: https://microservices-deploy-kv.vault.azure.net 
+hexaditeImage: acrmicroserviceswestus.azurecr.io/hexadite:latest 
+deploymentSecretsKeyVaultUrl: https://microservices-deploy-kv.vault.azure.net 

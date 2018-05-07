@@ -46,10 +46,10 @@ spec:
           - containerPort: 8080
       initContainers:
       - name: keyvault-agent
-        image: {{ .Values.HexaditeImage }} # acrmicroserviceswestus.azurecr.io/hexadite:latest 
+        image: {{ .Values.hexaditeImage }} # acrmicroserviceswestus.azurecr.io/hexadite:latest 
         env:
         - name: VAULT_BASE_URL
-          value: {{ .Values.DeploymentSecretsKeyVaultUrl }} # https://microservices-deploy-kv.vault.azure.net 
+          value: {{ .Values.deploymentSecretsKeyVaultUrl }} # https://microservices-deploy-kv.vault.azure.net 
         - name: SERVICE_PRINCIPLE_FILE_PATH
           value: /host/azure.json
         - name: SECRETS_FOLDER

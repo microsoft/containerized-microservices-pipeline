@@ -126,7 +126,7 @@ az keyvault certificate import --name mt-ssl-cert --vault-name $K8_DEPLOYMENT_KE
 kubectl apply -f traefik-rbac.yaml
 
 # Deploy traefik using the service account defined in rbac roles
-helm install ./chart --wait --name traefik-ingress-controller --set DeploymentSecretsKeyVaultUrl=https://${K8_DEPLOYMENT_KEYVAULT_NAME}.vault.azure.net --set HexaditeImage=${AZURE_CONTAINER_REGISTRY_NAME}.azurecr.io/hexadite:latest
+helm install ./chart --wait --name traefik-ingress-controller --set deploymentSecretsKeyVaultUrl=https://${K8_DEPLOYMENT_KEYVAULT_NAME}.vault.azure.net --set hexaditeImage=${AZURE_CONTAINER_REGISTRY_NAME}.azurecr.io/hexadite:latest
 
 ## -------
 ## create Azure Traffic Manager endpoint for this cluster
