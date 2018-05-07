@@ -78,7 +78,7 @@ LOG_ANALYTICS_OMS_PARAMS=$(jq --arg resourceGroup $COMMON_RESOURCE_GROUP '.param
 echo $LOG_ANALYTICS_OMS_PARAMS > logAnalyticsOms.parameters.temp.json
 
 az storage account delete --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --yes
-az storage account create --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION --sku Standard_LRS
+az storage account create --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --location eastus --sku Standard_LRS
 az group deployment delete --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS"
 az group deployment create --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS" --template-file logAnalyticsOms.json  --parameters @logAnalyticsOms.parameters.temp.json
 
