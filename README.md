@@ -83,6 +83,10 @@ An example cross platform middle tier api is provided as part of the solution, i
 
 [Deploying secrets to production](SecuringSecrets.md)
 
+## Using VSTS to set up Continuous Integration and Continuous Deployment
+
+[Continuous integration/deployment](ContinuousIntegrationAndDeployment.md)
+
 ## Log Analyticss
 
 [Integrating Log Analytics](deployment/LogAnalytics.md)
