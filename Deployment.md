@@ -52,8 +52,10 @@ You will need an SSL certificate protecting the HTTP requests with the users pas
 
 Specify the path to the ssl certificate .pfx file and the password protecting the .pfx in deployCluster.sh:
 
+```shell
 SSL_CERT_FILE_PATH=
 SSL_PASSWORD=
+```
 
 ## Deploying a k8 cluster
 
