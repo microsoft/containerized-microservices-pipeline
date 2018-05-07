@@ -47,6 +47,7 @@ az keyvault secret set --name token-sign-key  --vault-name $MT_KEYVAULT_NAME --d
 
 # use self signed cert for now
 SSL_PASSWORD=`uuidgen`
+FQDN=`az network traffic-manager profile list --resource-group $COMMON_RESOURCE_GROUP --query [0].dnsConfig.fqdn -o tsv`
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.crt -days 365 -subj "/C=US/ST=Washington/L=Redmond/O=Acme/OU=Org/CN=${FQDN}" -passout env:SSL_PASSWORD
 openssl pkcs12 -export -in cert.crt -inkey key.pem -passin env:SSL_PASSWORD -out cert.pfx -passout env:SSL_PASSWORD
 az keyvault certificate import --name mt-ssl-cert --vault-name $K8_DEPLOYMENT_KEYVAULT_NAME -f cert.pfx --password $SSL_PASSWORD --query id
