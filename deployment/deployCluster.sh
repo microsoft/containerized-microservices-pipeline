@@ -8,6 +8,10 @@ exec > >(tee "deployCluster.txt")
 exec 2>&1
 
 ## -------
+# Import global variables
+. ./globalVariables.prod.sh
+
+## -------
 # Cluster variables
 CLUSTER_NAME= # Add Desired Cluster Name
 
@@ -25,10 +29,6 @@ then
       echo "\A required value in deployCluster.sh is empty!!!!!!!!!!!!!"
       exit 1
 fi
-
-## -------
-# Import global variables
-. ./globalVariables.prod.sh
 
 ## -------
 # Login to Azure and set the Azure subscription for this script to use
@@ -58,7 +58,7 @@ az role assignment create --assignee $ACS_SERVICE_PRINCIPAL_ID --scope $AZURE_CO
 
 ## -------
 # SP running in K8s can only read the secret
-az keyvault set-policy --secret-permissions get --certificate-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME
+az keyvault set-policy --secret-permissions get --certificate-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME --query id
 
 ## -------
 ## create kubernetes cluster
@@ -121,8 +121,8 @@ kubectl apply -f traefik-deployment.yaml
 
 ## -------
 ## create Azure Traffic Manager endpoint for this cluster
-AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}'].dnsSettings.fqdn" -o tsv)
-az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
+AZURE_PUBLIC_IP=$(az network public-ip list -g $RESOURCE_GROUP --query "[?tags.service=='kube-system/traefik-ingress-service'].ipAddress" -o tsv)
+az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP --priority 1
 
 ## ------
 ## OMS Agent
