@@ -16,7 +16,6 @@ CLUSTER_NAME= # Add Desired Cluster Name
 AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
-MT_CONNECTION_STRING= # Middle tier SQL connection string
 
 ## -------
 # Validate that values have been set for required variables
