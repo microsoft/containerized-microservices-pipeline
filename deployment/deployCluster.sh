@@ -23,8 +23,13 @@ AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
 MT_CONNECTION_STRING= # Middle tier SQL connection string
 
 ## -------
+# SSL certificate data
+SSL_CERT_FILE_PATH= # file path to the Middle Tier ssl certificate .pfx file.
+SSL_PASSWORD= # password protecting .pfx file
+
+## -------
 # Validate that values have been set for required variables
-if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ] || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ] 
+if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ] || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ] || [ -z "SSL_PASSWORD" ] || [ -z "SSL_CERT_FILE_PATH" ]
 then
       echo "\A required value in deployCluster.sh is empty!!!!!!!!!!!!!"
       exit 1
@@ -110,14 +115,18 @@ chmod 700 get_helm.sh
 ./get_helm.sh
 helm init --upgrade
 
+sleep 15
+
 ## ------
 ## Traefik ingress controller
+
+az keyvault certificate import --name mt-ssl-cert --vault-name $K8_DEPLOYMENT_KEYVAULT_NAME -f $SSL_CERT_FILE_PATH --password $SSL_PASSWORD --query id
 
 # Create rbac roles for traefik
 kubectl apply -f traefik-rbac.yaml
 
 # Deploy traefik using the service account defined in rbac roles
-kubectl apply -f traefik-deployment.yaml
+helm install ./chart --wait --name traefik-ingress-controller --set deploymentSecretsKeyVaultUrl=https://${K8_DEPLOYMENT_KEYVAULT_NAME}.vault.azure.net --set hexaditeImage=${AZURE_CONTAINER_REGISTRY_NAME}.azurecr.io/hexadite:latest
 
 ## -------
 ## create Azure Traffic Manager endpoint for this cluster
