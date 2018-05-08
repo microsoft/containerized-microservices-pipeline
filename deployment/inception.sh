@@ -33,7 +33,7 @@ az group create --name $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION
 ## -------
 # Create the Azure Traffic Manager profile
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME=$PROJECT_NAME-trafficmgr
-az network traffic-manager profile create --name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --routing-method Priority --unique-dns-name $PROJECT_NAME
+az network traffic-manager profile create --name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --routing-method Priority --unique-dns-name $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX
 
 ## -------
 ## Create key vault that k8 hexodite will use to get pod specific secrets

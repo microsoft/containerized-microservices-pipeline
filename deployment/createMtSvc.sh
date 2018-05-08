@@ -44,3 +44,4 @@ export MT_CONNECTION_STRING
 # create token signing key
 TOKEN_SIGN_KEY=`uuidgen`
 az keyvault secret set --name token-sign-key  --vault-name $MT_KEYVAULT_NAME --description "used by middle tier to sign tokens" --value $TOKEN_SIGN_KEY --query id
+

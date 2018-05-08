@@ -1,0 +1,119 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+  labels:
+    k8s-app: traefik-ingress-lb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress-lb
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        name: traefik-ingress-lb
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      containers:
+      - image: traefik
+        name: traefik-ingress-lb
+        args:
+        - --api
+        - --kubernetes
+        - --logLevel=INFO
+        - storeconfig
+        - --configfile=/config/traefik.toml
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+          readOnly: true
+        - name: config
+          mountPath: /config
+        ports:
+          - containerPort: 80
+          - containerPort: 443
+          - containerPort: 8080
+      initContainers:
+      - name: keyvault-agent
+        image: {{ .Values.hexaditeImage }} # acrmicroserviceswestus.azurecr.io/hexadite:latest 
+        env:
+        - name: VAULT_BASE_URL
+          value: {{ .Values.deploymentSecretsKeyVaultUrl }} # https://microservices-deploy-kv.vault.azure.net 
+        - name: SERVICE_PRINCIPLE_FILE_PATH
+          value: /host/azure.json
+        - name: SECRETS_FOLDER
+          value: /secrets
+        - name: SECRETS_KEYS
+          value: mt-ssl-cert::mt-ssl-cert.pem:mt-ssl-key.pem
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+        - name: host-sp
+          mountPath: /host/azure.json
+          readOnly: true
+      imagePullSecrets:
+        - name: acr-credentials
+      volumes:
+      - name: config
+        configMap:
+          name: traefik-conf
+      - name: secrets
+        emptyDir:
+          # we want the secrets to reside only in-memory
+          medium: Memory
+      - name: host-sp
+        hostPath:
+          # this file contains the cluster service-principal, it exists on every node by default
+          path: /etc/kubernetes/azure.json
+          #type: File # commented out because current cubctl doesn't understand it.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: kube-system
+  name: traefik-conf
+data:
+  traefik.toml: |
+    defaultEntryPoints = ["http","https"]
+    [entryPoints]
+      [entryPoints.http]
+      address = ":80"
+        [entryPoints.http.redirect]
+          entryPoint = "https"
+      [entryPoints.https]
+      address = ":443"
+        [entryPoints.https.tls]
+          [[entryPoints.https.tls.certificates]]
+          CertFile = "/secrets/certs_keys/mt-ssl-cert.pem"
+          KeyFile = "/secrets/certs_keys/mt-ssl-key.pem"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: traefik-ingress-service
+  namespace: kube-system
+spec:
+  selector:
+    k8s-app: traefik-ingress-lb
+  ports:
+    - protocol: TCP
+      port: 80
+      name: web
+    - protocol: TCP
+      port: 443
+      name: https
+    - protocol: TCP
+      port: 8080
+      name: admin
+  type: LoadBalancer
