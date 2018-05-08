@@ -41,3 +41,75 @@ On every successful build, continuous delivery is kicked off. Our reference arch
 `Canary` releases are deployed to the cluster on each successful build. This will ensure that changes are constantly delivered and high deployment velocity is available.
 
 `Stable` releases are typically a couple versions behind `canary` and the images are deemed stable for production. This will ensure that changes are highly available. Our solution requires an administrator to sign off on `stable` deployments. Rollbacks are easily accessible since each build is versioned.
+
+## Creating Continuous Integration
+
+Each Repository requires 2 Build Definitions: one for PRs and one for master builds.
+
+### Pull Request Builds
+
+1. Create new build definition.
+    ![Create Build Definition](/images/CreateBuildDefinition.png)
+
+2. Select GitHub as the source and authenticate with a valid github account. This should ideally be a service github account used only for the builds.
+    ![Authenticate on Github](/images/SelectSource.png)
+
+3. Once authenticated, select the repository and the branch this build will service. Begin the build as an empty process.
+    ![Select Repository](/images/SelectRepo.png)
+
+4. Select your build agent pool or select a hosted agent that fits the OS you would like to build with.
+    ![Add Build Agents](/images/SelectBuildAgent.png)
+
+5. Add the appropriate build tasks that PRs should pass before being merged in. Some examples include running tests, linting code, installing dependencies, or building the typescript source code.
+    ![Add Build Tasks](/images/AddBuildTasks.png)
+
+6. Once the appropriate build has been setup, navigate to `Triggers` and connect the repo with this build as a pull request validator.
+    ![PR Validation](/images/PrValidation.png)
+
+### Master Builds
+
+1. Refer to steps 1-4 on section [Pull Request Builds](#Pull-Request-Builds)
+
+2. Add build variables by navigating to `Variables` and adding a `DockerImageName`, `MajorVersion`, and `MinorVersion`. The build will use these variables to semantically version the docker images.
+    ![Add Build Variables](/images/AddBuildVariables.png)
+
+
+3. Navigate to `Options` and add `$(MajorVersion).$(MinorVersion)$(Rev:.r)` as the `Build number format`. This will ensure the build properly versions the docker images.
+    ![Add Build Number Format](/images/BuildNumberFormat.png)
+
+4. Add a task for building a docker image.
+
+    Complete the following tasks:
+    - Add Azure Subscription Id
+    - Select Azure Container Registery
+    - Select `Build an image` as the `Action`
+    - Select the `Dockerfile` that will be used to build the image.
+    - Ensure use Default Build Context is selected.
+    - Add the `$(DockerImageName):$(Build.BuildNumber)` as the `Image Name`.
+
+    ![Build Docker Image](/images/BuildDockerImage.png)
+
+5. Add a task for publishing a docker image.
+
+    Complete the following tasks:
+    - Add Azure Subscription Id
+    - Select Azure Container Registery
+    - Select `Push an image` as the `Action`
+    - Select the `Dockerfile` that will be used to build the image.
+    - Ensure use Default Build Context is selected.
+    - Add the `$(DockerImageName):$(Build.BuildNumber)` as the `Image Name`.
+
+    ![Publish Docker Image](/images/PublishDockerImage.png)
+
+6. Add a task to Publish the build Artifact. The published artifact will be consumed in `Continuous Deployment`. In our case, this is helm chart used for deployment.
+
+    Complete the following tasks:
+    - Pick a path to publish
+    - Name the artifact
+    - Select `Visual Studio Team Services/TFS` as the `Artifact publish location`.
+
+    ![Publish Build Artifact](/images/PublishArtifact.png)
+
+
+7. Navigate to `Triggers` and enable Continuous Integration. This build definition will now trigger when there are new changes in the master branch.
+    ![Enable Continuous Integration](/images/EnableContinuousIntegration.png)
