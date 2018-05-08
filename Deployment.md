@@ -2,7 +2,7 @@
 
 ## Deploying to an Azure Subscription for the first time
 
-If you are setting up a new micro-service pipeline from scratch, you will need to deploy all of the foundational, shared Azure resources that are necessary to support the k8 solution in Azure. All of these resources are deployed via the inception.sh script provided in this solution.
+If you are setting up a new micro-service pipeline from scratch, you will need to deploy all of the foundational, shared Azure resources that are necessary to support the k8 solution in Azure. All of these resources are deployed via the [inception.sh](deployment/inception.sh) script provided in this solution.
 
 The following resources are deployed by [inception.sh](deployment/inception.sh):
 
