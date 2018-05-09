@@ -92,10 +92,31 @@ echo Starting to clean up ARM template resources
 rm ./clusterDefinition.temp.json
 
 ## -------
-## Download Kubernetes Credentials and show cluster information
-chmod 700 cluster_rsa
-KUBECONFIG=`pwd`/_output/$CLUSTER_NAME/kubeconfig/kubeconfig.$AZURE_LOCATION.json
-export KUBECONFIG
+## Set Kubernetes Credentials and show cluster information
+
+KUBE_RESOURCES_PATH=_output/$CLUSTER_NAME
+KUBE_USER=$CLUSTER_NAME-admin
+
+# Set cluster
+kubectl config delete-cluster $CLUSTER_NAME
+kubectl config set-cluster $CLUSTER_NAME \
+--server=https://$CLUSTER_NAME.$AZURE_LOCATION.cloudapp.azure.com \
+--certificate-authority=$KUBE_RESOURCES_PATH/ca.crt \
+--embed-certs=true
+
+# Set context
+kubectl config delete-context $CLUSTER_NAME
+kubectl config set-context $CLUSTER_NAME \
+--cluster=$CLUSTER_NAME \
+--user=$KUBE_USER
+
+# Set user
+kubectl config unset users.$CLUSTER_NAME-admin
+kubectl config set-credentials $KUBE_USER \
+--client-certificate=$KUBE_RESOURCES_PATH/client.crt \
+--client-key=$KUBE_RESOURCES_PATH/client.key \
+--embed-certs=true
+
 kubectl config use-context $CLUSTER_NAME
 kubectl version
 kubectl cluster-info
