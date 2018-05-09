@@ -45,7 +45,6 @@ Copy the values for the following variables from the inception script output fil
 K8_DEPLOYMENT_KEYVAULT_NAME
 AZURE_CONTAINER_REGISTRY_NAME
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME
-MT_CONNECTION_STRING
 ```
 
 You will need an SSL certificate protecting the HTTP requests with the users passwords to the Middle Tier Login Service.
