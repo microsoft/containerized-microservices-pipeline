@@ -20,7 +20,6 @@ CLUSTER_NAME= # Add Desired Cluster Name
 AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
 K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
-MT_CONNECTION_STRING= # Middle tier SQL connection string
 
 ## -------
 # SSL certificate data
@@ -135,11 +134,6 @@ az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $
 WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsoft.OperationalInsights/workspaces --name containerized-loganalyticsWS | grep customerId | sed -e 's/.*://')
 #helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=$KEYVAL stable/msoms
 # TODO: populate $KEYVAL parameter
-
-## -------
-## create ConfigMap for this cluster
-kubectl delete configmap configs
-kubectl create configmap configs --from-env-file=configs.properties
 
 ## -------
 # ACS cluster deployment and setup complete
