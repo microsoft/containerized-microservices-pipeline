@@ -46,6 +46,10 @@ On every successful build, continuous delivery is kicked off. Our reference arch
 
 Each Repository requires 2 Build Definitions: one for PRs and one for master builds.
 
+**Prerequisites**
+- Kube Config must be on build/release machines.
+- All dependencies must be installed on build/release machines.
+
 ### Pull Request Builds
 
 1. Create new build definition.
@@ -113,3 +117,25 @@ Each Repository requires 2 Build Definitions: one for PRs and one for master bui
 
 7. Navigate to `Triggers` and enable Continuous Integration. This build definition will now trigger when there are new changes in the master branch.
     ![Enable Continuous Integration](/images/EnableContinuousIntegration.png)
+
+### Creating Continuous Deployment
+
+Each deployable service will require a release definition. Multiple environments can be handled with a single release definition.
+
+1. Create new release definition. Begin with an empty process.
+    ![Create Release Definition](/images/CreateReleaseDefinition.png)
+
+2. Add an `artifact` and select `Build` as the Source type.
+
+    Complete the following tasks:
+    - Add Project
+    - Select the source build definition.
+    - Select `Latest` as the `Default version`.
+    - Take note of `Source alias` this will be used during deployment.
+
+    ![Add Artifact](/images/AddArtifact.png)
+
+3. Select your release agent pool or select a hosted agent that fits the OS you would like to deploy with.
+    ![Add Release Agents](/images/SelectReleaseAgent.png)
+
+4. Add a helm task and run `helm upgrade -i`
