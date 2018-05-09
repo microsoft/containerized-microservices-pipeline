@@ -39,7 +39,7 @@ chmod 775 *.sh
 ./inception.sh
 ```
 
-Copy the values for the following variables from the inception script output file - inception.txt, you will need these in deployCluster.sh. You might want to save inception.txt somewhere safe as you will need it in the future to deploy additional clusters.
+Copy the values for the following variables from the inception script output file - inception.txt, you will need these in [deployCluster.sh](/deployment/deployCluster.sh). You might want to save inception.txt somewhere safe as you will need it in the future to deploy additional clusters.
 
 ```shell
 K8_DEPLOYMENT_KEYVAULT_NAME
