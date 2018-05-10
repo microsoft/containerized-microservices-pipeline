@@ -46,9 +46,17 @@ On every successful build, continuous delivery is kicked off. Our reference arch
 
 Each Repository requires 2 Build Definitions: one for PRs and one for master builds.
 
-**Prerequisites**
-- Kube Config must be on build/release machines.
-- All dependencies must be installed on build/release machines.
+### Prerequisites
+
+This guide will cover executing continuous integration and deployment with hosted build/release agents. Another option is to register your own machines into the agent pool. Your own private agents must have all the project dependencies. This would include the [deployment prerequisites](README.md#Development-Prerequisites). This guide will not cover [private agents](https://docs.microsoft.com/en-us/vsts/build-release/concepts/agents/agents?view=vsts).
+
+#### Hosted Build/Release Agents
+
+Hosted agents come with great tooling baked into each image. See [here](https://github.com/Microsoft/vsts-agent-docker/blob/master/ubuntu/16.04/standard/Dockerfile) for all the pre-installed dependencies on the `linux build agent`.
+
+However, hosted build agents do not come equiped with `helm` and `kubectl` which we use to deploy the services. We will be using a 3rd party `kubernetes` exntesion
+
+Install a marketplace [Kubernetes extension task](https://marketplace.visualstudio.com/items?itemName=tsuyoshiushio.k8s-endpoint) onto your VSTS. Follow the documentation to add your cluster.
 
 ### Pull Request Builds
 
