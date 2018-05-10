@@ -74,7 +74,7 @@ Each Repository requires 2 Build Definitions: one for PRs and one for master bui
 
 1. Refer to steps 1-4 on section [Pull Request Builds](#Pull-Request-Builds)
 
-2. Add build variables by navigating to `Variables` and adding a `DockerImageName`, `MajorVersion`, and `MinorVersion`. The build will use these variables to semantically version the docker images.
+2. Add build variables by navigating to `Variables` and add the following variables: `DockerImageName`, `MajorVersion`, and `MinorVersion`. The build will use these variables to semantically version the docker images within `Azure Container Registry`.
     ![Add Build Variables](/images/AddBuildVariables.png)
 
 
@@ -118,7 +118,7 @@ Each Repository requires 2 Build Definitions: one for PRs and one for master bui
 7. Navigate to `Triggers` and enable Continuous Integration. This build definition will now trigger when there are new changes in the master branch.
     ![Enable Continuous Integration](/images/EnableContinuousIntegration.png)
 
-### Creating Continuous Deployment
+## Creating Continuous Deployment
 
 Each deployable service will require a release definition. Multiple environments can be handled with a single release definition.
 
