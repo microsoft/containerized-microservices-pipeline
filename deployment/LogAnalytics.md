@@ -5,9 +5,9 @@ Azure Log Analytics allows you to collect and correlate data from multiple sourc
 We have employed Azure Log Analytics in order to monitor container health. We outline how to add this solution to your workspace below. The container monitoring solution shows which containers are running, where they are running, and what container image they’re running. Using this solution, we can troubleshoot containers by viewing detailed audit information and by searching centralized logs without having to remotely view Docker hosts. This solution makes it easy to find containers that may be noisy and consuming excess resources on a host. Additionally, you can view centralized CPU, memory, storage, and network usage and performance information.
 
 ## Integrating Log Analytics with this project:
-In `inception.sh`, an OMS Workspace is created using the JSON template in the deployment directory.
+In [inception.sh](/deployment/inception.sh), an OMS Workspace is created using the JSON template in the deployment directory.
 If you would like to change the location of the workspace, you can choose from East US, West Europe, Australia Southeast, and Southeast Asia.
-However, you must change this value both in the creation of the workspace in `inception.sh`:
+However, you must change this value both in the creation of the workspace in [inception.sh](/deployment/inception.sh):
 
 ```
 az storage account create --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --location eastus --sku Standard_LRS
@@ -36,7 +36,7 @@ WSID=$(az resource show --resource-group resourcegroupname  --resource-type Micr
 5. Run the following with your proper Workspace Key:
 
 ```
-#helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=<key-value> stable/msoms
+helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=<key-value> stable/msoms
 ```
 ## Add solutions to your Log Analytics workspace:
 1. If you haven't already done so, sign in to the Azure portal using your Azure subscription.
