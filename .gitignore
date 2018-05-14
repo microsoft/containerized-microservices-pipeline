@@ -114,3 +114,5 @@ bld/
 *.pidb
 *.svclog
 *.scc
+/deployment/_output
+.DS_Store

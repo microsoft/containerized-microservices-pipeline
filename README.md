@@ -74,6 +74,9 @@ An example cross platform middle tier api is provided as part of the solution, i
 
 7. JQ
     - [Download and install JQ](https://stedolan.github.io/jq/download/)
+8. Visual Studio
+	- Will be used for editing and executing web and load tests. There's an option to run the tests locally or in the cloud through VSTS. Web and load tests examples found [here](https://github.com/Microsoft/containerized-microservices-pipeline/tree/master/WebAndLoadTests).
+	- [Download and install Visual Studio](https://www.visualstudio.com/downloads/)
 
 ## Deploying Azure Resources and ACS Kubernetes Cluster
 
@@ -86,6 +89,18 @@ An example cross platform middle tier api is provided as part of the solution, i
 ## Traffic Routing
 
 [Routing requests to Azure and within Kubernetes](TrafficRouting.md)
+
+## Using VSTS to set up Continuous Integration and Continuous Deployment
+
+[Continuous integration/deployment](ContinuousIntegrationAndDeployment.md)
+
+## Log Analyticss
+
+[Integrating Log Analytics](deployment/LogAnalytics.md)
+
+## Repository Structure and Strategy
+
+We have one repository for the front end solution, one for our middle tier, and one common repository for deployment scripts. Because we are dealing with microservices, this approach allows the project to be both modular and scalable. The smaller codebases help developers contribute with faster execution and innovate rapidly due to fewer merge conflicts and clear ownership. Additionally, it allows the project to take full advantage of helm charts, helping control Kubernetes objects and application versioning. Using this structure as a reference solution, it is recommended that each additional microservice uses separate repositories for each of its respective services.
 
 ## Contributing
 

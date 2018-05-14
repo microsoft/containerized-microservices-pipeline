@@ -6,16 +6,16 @@
       "value": "PerNode"
     },
     "workspaceName": {
-      "value": "microservices-eastus-ws"
+      "value": ""
     },
     "location": {
       "value": "East US"
     },
     "applicationDiagnosticsStorageAccountName": {
-      "value": "projectdiagsaname"
+      "value": ""
     },
     "applicationDiagnosticsStorageAccountResourceGroup": {
-      "value": "microservices-eastus-resources"
+      "value": ""
     }
   }
 }

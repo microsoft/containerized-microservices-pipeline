@@ -8,6 +8,10 @@ exec > >(tee "deployCluster.txt")
 exec 2>&1
 
 ## -------
+# Import global variables
+. ./globalVariables.prod.sh
+
+## -------
 # Cluster variables
 CLUSTER_NAME= # Add Desired Cluster Name
 
@@ -18,16 +22,17 @@ K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
 AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
 
 ## -------
+# SSL certificate data
+SSL_CERT_FILE_PATH= # file path to the Middle Tier ssl certificate .pfx file.
+SSL_PASSWORD= # password protecting .pfx file
+
+## -------
 # Validate that values have been set for required variables
-if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ] || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ] 
+if [ -z "$CLUSTER_NAME" ] || [ -z "$AZURE_TRAFFIC_MANAGER_PROFILE_NAME" ] || [ -z "$AZURE_CONTAINER_REGISTRY_NAME" ] || [ -z "$K8_DEPLOYMENT_KEYVAULT_NAME" ] || [ -z "SSL_PASSWORD" ] || [ -z "SSL_CERT_FILE_PATH" ]
 then
       echo "\A required value in deployCluster.sh is empty!!!!!!!!!!!!!"
       exit 1
 fi
-
-## -------
-# Import global variables
-. ./globalVariables.prod.sh
 
 ## -------
 # Login to Azure and set the Azure subscription for this script to use
@@ -57,11 +62,12 @@ az role assignment create --assignee $ACS_SERVICE_PRINCIPAL_ID --scope $AZURE_CO
 
 ## -------
 # SP running in K8s can only read the secret
-az keyvault set-policy --secret-permissions get --certificate-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME
+az keyvault set-policy --secret-permissions get --certificate-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $K8_DEPLOYMENT_KEYVAULT_NAME --spn http://$ACS_SERVICE_PRINCIPAL_NAME --query id
 
 ## -------
 ## create kubernetes cluster
 DNS_PREFIX=$CLUSTER_NAME
+SSH_PUB_KEY_DATA=$(<cluster_rsa.pub)
 
 # prepare the cluster deployment file for ACS Engine
 echo Starting update of cluster definition json file
@@ -69,34 +75,48 @@ CLUSTER_DEFINITION=$(<clusterDefinition.json)
 CLUSTER_DEFINITION=$(jq --arg id $ACS_SERVICE_PRINCIPAL_ID '.properties.servicePrincipalProfile.clientId=$id' <<< "$CLUSTER_DEFINITION")
 CLUSTER_DEFINITION=$(jq --arg secret $ACS_SERVICE_PRINCIPAL_PASSWORD '.properties.servicePrincipalProfile.secret=$secret' <<< "$CLUSTER_DEFINITION")
 CLUSTER_DEFINITION=$(jq --arg dnsPrefix $DNS_PREFIX '.properties.masterProfile.dnsPrefix=$dnsPrefix' <<< "$CLUSTER_DEFINITION")
+CLUSTER_DEFINITION=$(jq --arg ssh_pub_key_data "$SSH_PUB_KEY_DATA" '.properties.linuxProfile.ssh.publicKeys[0].keyData=$ssh_pub_key_data' <<< "$CLUSTER_DEFINITION")
 echo $CLUSTER_DEFINITION > clusterDefinition.temp.json
 echo Updated cluster definition json file
 
-# generate the ARM template
-echo Starting generation of ARM template
-acs-engine generate ./clusterDefinition.temp.json
-echo Completed generation of ARM template
-
-# deploy the ARM template
-echo Starting deployment of ARM template
-az group deployment create \
-    --name acs-engine-cluster \
-    --resource-group $RESOURCE_GROUP \
-    --template-file ./_output/$DNS_PREFIX/azuredeploy.json \
-    --parameters ./_output/$DNS_PREFIX/azuredeploy.parameters.json
-echo Completed deployment of ARM template
+# deploy Kubernetes cluster with acs-engine
+echo Starting deployment of Kubernetes cluster using acs-engine
+acs-engine deploy \
+    --subscription-id $AZURE_SUBSCRIPTION_ID \
+    --resource-group $RESOURCE_GROUP  \
+    --location $AZURE_LOCATION \
+    --api-model ./clusterDefinition.temp.json
+echo Completed deployment of Kubernetes cluster
 
 echo Starting to clean up ARM template resources
 rm ./clusterDefinition.temp.json
 
-
 ## -------
-## Download Kubernetes Credentials and show cluster information
-chmod 700 cluster_rsa
-echo "----- You will need to enter the certificate password after the next command before it times out -----"
-sleep 15 # give the user time to prepare to enter the password
-scp -i ./cluster_rsa azureuser@$DNS_PREFIX.$AZURE_LOCATION.cloudapp.azure.com:.kube/config .
-export KUBECONFIG=`pwd`/config
+## Set Kubernetes Credentials and show cluster information
+
+KUBE_RESOURCES_PATH=_output/$CLUSTER_NAME
+KUBE_USER=$CLUSTER_NAME-admin
+
+# Set cluster
+kubectl config delete-cluster $CLUSTER_NAME
+kubectl config set-cluster $CLUSTER_NAME \
+--server=https://$CLUSTER_NAME.$AZURE_LOCATION.cloudapp.azure.com \
+--certificate-authority=$KUBE_RESOURCES_PATH/ca.crt \
+--embed-certs=true
+
+# Set context
+kubectl config delete-context $CLUSTER_NAME
+kubectl config set-context $CLUSTER_NAME \
+--cluster=$CLUSTER_NAME \
+--user=$KUBE_USER
+
+# Set user
+kubectl config unset users.$CLUSTER_NAME-admin
+kubectl config set-credentials $KUBE_USER \
+--client-certificate=$KUBE_RESOURCES_PATH/client.crt \
+--client-key=$KUBE_RESOURCES_PATH/client.key \
+--embed-certs=true
+
 kubectl config use-context $CLUSTER_NAME
 kubectl version
 kubectl cluster-info
@@ -115,30 +135,26 @@ chmod 700 get_helm.sh
 ./get_helm.sh
 helm init --upgrade
 
+sleep 15
+
 ## ------
 ## Traefik ingress controller
 
-# Create rbac roles for traefik
-kubectl apply -f traefik-rbac.yaml
+az keyvault certificate import --name mt-ssl-cert --vault-name $K8_DEPLOYMENT_KEYVAULT_NAME -f $SSL_CERT_FILE_PATH --password $SSL_PASSWORD --query id
 
 # Deploy traefik using the service account defined in rbac roles
-kubectl apply -f traefik-deployment.yaml
+helm install ./charts/traefik --wait --name traefik-ingress-controller --set deploymentSecretsKeyVaultUrl=https://${K8_DEPLOYMENT_KEYVAULT_NAME}.vault.azure.net --set hexaditeImage=${AZURE_CONTAINER_REGISTRY_NAME}.azurecr.io/hexadite:latest
 
 ## -------
 ## create Azure Traffic Manager endpoint for this cluster
-AZURE_PUBLIC_IP_FQDN=$(az network public-ip list -g $RESOURCE_GROUP --query "[?dnsSettings.domainNameLabel=='${CLUSTER_NAME}'].dnsSettings.fqdn" -o tsv)
-az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP_FQDN --priority 1
+AZURE_PUBLIC_IP=$(az network public-ip list -g $RESOURCE_GROUP --query "[?tags.service=='kube-system/traefik-ingress-service'].ipAddress" -o tsv)
+az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP --priority 1
 
 ## ------
 ## OMS Agent
 WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsoft.OperationalInsights/workspaces --name containerized-loganalyticsWS | grep customerId | sed -e 's/.*://')
 #helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=$KEYVAL stable/msoms
 # TODO: populate $KEYVAL parameter
-
-## -------
-## create ConfigMap for this cluster
-kubectl delete configmap configs
-kubectl create configmap configs --from-file=configs.properties --from-literal=MtConnectionString=$MT_CONNECTION_STRING
 
 ## -------
 # ACS cluster deployment and setup complete

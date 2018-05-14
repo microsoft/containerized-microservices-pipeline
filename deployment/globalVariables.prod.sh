@@ -10,6 +10,8 @@ AZURE_LOCATION=eastus # Insert Azure Location here (westus, eastus, etc.)
 export AZURE_LOCATION
 PROJECT_NAME= # Insert project name here
 export PROJECT_NAME 
+PUBLIC_DOMAIN_NAME_SUFFIX= # Application and middle tier will be accessible at $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX.trafficmanager.net
+export PUBLIC_DOMAIN_NAME_SUFFIX
 
 ## -------
 # Common Azure resources resource group

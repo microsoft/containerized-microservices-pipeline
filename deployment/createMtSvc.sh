@@ -45,9 +45,3 @@ export MT_CONNECTION_STRING
 TOKEN_SIGN_KEY=`uuidgen`
 az keyvault secret set --name token-sign-key  --vault-name $MT_KEYVAULT_NAME --description "used by middle tier to sign tokens" --value $TOKEN_SIGN_KEY --query id
 
-# use self signed cert for now
-SSL_PASSWORD=`uuidgen`
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.crt -days 365 -subj "/C=US/ST=Washington/L=Redmond/O=Acme/OU=Org/CN=${FQDN}" -passout env:SSL_PASSWORD
-openssl pkcs12 -export -in cert.crt -inkey key.pem -passin env:SSL_PASSWORD -out cert.pfx -passout env:SSL_PASSWORD
-az keyvault certificate import --name mt-ssl-cert --vault-name $K8_DEPLOYMENT_KEYVAULT_NAME -f cert.pfx --password $SSL_PASSWORD --query id
- 
