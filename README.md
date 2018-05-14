@@ -85,7 +85,7 @@ An example cross platform middle tier api is provided as part of the solution, i
 
 ## Traffic Routing
 
-[Routing requests to Azure and within Kubernetes](TrafficeRouting.md)
+[Routing requests to Azure and within Kubernetes](TrafficRouting.md)
 
 ## Contributing
 
