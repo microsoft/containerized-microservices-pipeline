@@ -18,7 +18,7 @@ An Azure load balancer provides a public IP and the entry point for all public r
 
 A [Traefik ingress controller](https://github.com/kubernetes/charts/tree/master/stable/traefik) is used within the Kubernetes cluster for traffic routing. Traefik provides flexibility to describe routes as code and review any routing changes before they are applied. Traefik uses a single public IP on the Azure Load Balancer and handles routing all requests for the k8 services in the Kubernetes cluster based on hostname, paths and/or ports.
 
-**Traefik also handles ssl termination** for the Kubernetes cluster. This enables the SSL certificate to be deployed to a single location and ensures that all traffic will travel over HTTPS into the Kubernestes cluster.
+**Traefik also handles SSL termination** for the Kubernetes cluster. This enables the SSL certificate to be deployed to a single location and ensures that all traffic will travel over HTTPS into the Kubernestes cluster.
 
 ## Kubernetes Services
 
