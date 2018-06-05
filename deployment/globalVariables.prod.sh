@@ -5,13 +5,13 @@ set -x
 
 ## -------
 # Global variables for the environment
-AZURE_SUBSCRIPTION_ID=4bfa739e-0d8c-437e-9302-e3da21c66828 # Insert Azure Subscription ID value here
+AZURE_SUBSCRIPTION_ID= # Insert Azure Subscription ID value here
 export AZURE_SUBSCRIPTION_ID
 AZURE_LOCATION=eastus # Insert Azure Location here (westus, eastus, etc.)
 export AZURE_LOCATION
-PROJECT_NAME=liztest
+PROJECT_NAME=
 export PROJECT_NAME 
-PUBLIC_DOMAIN_NAME_SUFFIX=lizpubdomain # Application and middle tier will be accessible at $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX.trafficmanager.net
+PUBLIC_DOMAIN_NAME_SUFFIX= # Application and middle tier will be accessible at $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX.trafficmanager.net
 export PUBLIC_DOMAIN_NAME_SUFFIX
 
 ## -------
