@@ -16,10 +16,10 @@ exec 2>&1
 CLUSTER_NAME= # Add Desired Cluster Name
 
 ## -------
-# Values from inception.txt output
-AZURE_CONTAINER_REGISTRY_NAME=  # Azure Container Registry Name
-K8_DEPLOYMENT_KEYVAULT_NAME= # Name of KeyVault provisioned in createMtSvc.sh
-AZURE_TRAFFIC_MANAGER_PROFILE_NAME= # Name of the Azure Traffic Manager profile
+# Get values for Azure resources created by inception.sh
+AZURE_CONTAINER_REGISTRY_NAME=$(az acr list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep acr)
+K8_DEPLOYMENT_KEYVAULT_NAME=$(az keyvault list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep deploy-kv)
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME=$(az network traffic-manager profile list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep trafficmgr)
 
 ## -------
 # SSL certificate data
