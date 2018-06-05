@@ -9,6 +9,7 @@
 # PROJECT_NAME
 ########################################
 
+set -e # stop script execution on failure
 set -x
 
 MT_SERVICE_PRINCIPAL_NAME=$PROJECT_NAME-mt-svc

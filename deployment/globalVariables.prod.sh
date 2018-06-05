@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e # stop script execution on failure
 set -x
 
 ## -------
