@@ -28,7 +28,7 @@ fi
 ## -------
 # Create the Azure resource group(s) to hold common resources
 echo ........ Creating resource groups
-az group delete --name=$COMMON_RESOURCE_GROUP --yes
+! az group delete --name=$COMMON_RESOURCE_GROUP --yes
 az group create --name $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION
 
 ## -------
@@ -40,7 +40,7 @@ az network traffic-manager profile create --name $AZURE_TRAFFIC_MANAGER_PROFILE_
 ## Create key vault that k8 hexodite will use to get pod specific secrets
 K8_DEPLOYMENT_KEYVAULT_NAME=$PROJECT_NAME-deploy-kv
 export K8_DEPLOYMENT_KEYVAULT_NAME
-az keyvault delete --name $K8_DEPLOYMENT_KEYVAULT_NAME --resource-group $COMMON_RESOURCE_GROUP
+! az keyvault delete --name $K8_DEPLOYMENT_KEYVAULT_NAME --resource-group $COMMON_RESOURCE_GROUP
 az keyvault create --name $K8_DEPLOYMENT_KEYVAULT_NAME --resource-group $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION
 
 ## -------
@@ -78,12 +78,12 @@ LOG_ANALYTICS_OMS_PARAMS=$(jq --arg storageAccountName $K8_DEPLOYMENT_DIAGSA_NAM
 LOG_ANALYTICS_OMS_PARAMS=$(jq --arg resourceGroup $COMMON_RESOURCE_GROUP '.parameters.applicationDiagnosticsStorageAccountResourceGroup.value=$resourceGroup' <<< "$LOG_ANALYTICS_OMS_PARAMS")
 echo $LOG_ANALYTICS_OMS_PARAMS > logAnalyticsOms.parameters.temp.json
 
-az storage account delete --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --yes
+! az storage account delete --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --yes
 az storage account create --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --location eastus --sku Standard_LRS
-az group deployment delete --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS"
+! az group deployment delete --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS"
 az group deployment create --resource-group $COMMON_RESOURCE_GROUP --name "Microsoft.LogAnalyticsOMS" --template-file logAnalyticsOms.json  --parameters @logAnalyticsOms.parameters.temp.json
 
-rm ./logAnalyticsOms.parameters.temp.json
+! rm ./logAnalyticsOms.parameters.temp.json
 
 ## -------
 # Create the middle tier service

@@ -44,13 +44,13 @@ az account set --subscription $AZURE_SUBSCRIPTION_ID
 ## -------
 ## create resource group
 RESOURCE_GROUP=$CLUSTER_NAME
-az group delete --name=$RESOURCE_GROUP --yes
+! az group delete --name=$RESOURCE_GROUP --yes
 az group create --name=$RESOURCE_GROUP --location=$AZURE_LOCATION
 
 ## -------
 ## create service principal
 ACS_SERVICE_PRINCIPAL_NAME=$CLUSTER_NAME
-az ad sp delete --id http://$ACS_SERVICE_PRINCIPAL_NAME
+! az ad sp delete --id http://$ACS_SERVICE_PRINCIPAL_NAME
 ACS_SERVICE_PRINCIPAL_PASSWORD=`az ad sp create-for-rbac --name $ACS_SERVICE_PRINCIPAL_NAME --role="Contributor" --scopes="/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP" --query password -o tsv`
 
 sleep 10 # Azure CLI bug needs delay so SP can propegate
@@ -99,20 +99,20 @@ KUBE_RESOURCES_PATH=_output/$CLUSTER_NAME
 KUBE_USER=$CLUSTER_NAME-admin
 
 # Set cluster
-kubectl config delete-cluster $CLUSTER_NAME
+! kubectl config delete-cluster $CLUSTER_NAME
 kubectl config set-cluster $CLUSTER_NAME \
 --server=https://$CLUSTER_NAME.$AZURE_LOCATION.cloudapp.azure.com \
 --certificate-authority=$KUBE_RESOURCES_PATH/ca.crt \
 --embed-certs=true
 
 # Set context
-kubectl config delete-context $CLUSTER_NAME
+! kubectl config delete-context $CLUSTER_NAME
 kubectl config set-context $CLUSTER_NAME \
 --cluster=$CLUSTER_NAME \
 --user=$KUBE_USER
 
 # Set user
-kubectl config unset users.$CLUSTER_NAME-admin
+! kubectl config unset users.$CLUSTER_NAME-admin
 kubectl config set-credentials $KUBE_USER \
 --client-certificate=$KUBE_RESOURCES_PATH/client.crt \
 --client-key=$KUBE_RESOURCES_PATH/client.key \
