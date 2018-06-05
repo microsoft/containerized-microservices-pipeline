@@ -14,7 +14,10 @@ exec 2>&1
 
 ## -------
 # Cluster variables
+MAX_CLUSTER_NAME_LENGTH=20
 CLUSTER_NAME= # Add Desired Cluster Name
+
+if [ ${#CLUSTER_NAME} -ge $MAX_CLUSTER_NAME_LENGTH ]; then echo "CLUSTER_NAME cannot be longer than $MAX_CLUSTER_NAME_LENGTH characters" ; exit 1; fi
 
 ## -------
 # Values from inception.txt output
