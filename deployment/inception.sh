@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e # stop script execution on failure
+#set -e # stop script execution on failure
 set -x
 
 ## -------
@@ -70,12 +70,16 @@ echo ........ Creating App Insights
 # Create OMS Workspace
 echo ........ Creating OMS Workspace
 K8_DEPLOYMENT_DIAGSA_NAME="${PROJECT_NAME}diagsa"
+OMS_WORKSPACE_KEY="$(uuidgen)"
+echo $OMS_WORKSPACE_KEY
+export OMS_WORKSPACE_KEY
 
 # Generate log analytics parameters file
 LOG_ANALYTICS_OMS_PARAMS=$(<logAnalyticsOms.parameters.json)
 LOG_ANALYTICS_OMS_PARAMS=$(jq --arg workspaceName $PROJECT_NAME-$AZURE_LOCATION-ws '.parameters.workspaceName.value=$workspaceName' <<< "$LOG_ANALYTICS_OMS_PARAMS")
 LOG_ANALYTICS_OMS_PARAMS=$(jq --arg storageAccountName $K8_DEPLOYMENT_DIAGSA_NAME '.parameters.applicationDiagnosticsStorageAccountName.value=$storageAccountName' <<< "$LOG_ANALYTICS_OMS_PARAMS")
 LOG_ANALYTICS_OMS_PARAMS=$(jq --arg resourceGroup $COMMON_RESOURCE_GROUP '.parameters.applicationDiagnosticsStorageAccountResourceGroup.value=$resourceGroup' <<< "$LOG_ANALYTICS_OMS_PARAMS")
+LOG_ANALYTICS_OMS_PARAMS=$(jq --arg workspaceKey $OMS_WORKSPACE_KEY '.parameters.workspaceKey.value=$workspaceKey' <<< "$LOG_ANALYTICS_OMS_PARAMS")
 echo $LOG_ANALYTICS_OMS_PARAMS > logAnalyticsOms.parameters.temp.json
 
 az storage account delete --name $K8_DEPLOYMENT_DIAGSA_NAME --resource-group $COMMON_RESOURCE_GROUP --yes
