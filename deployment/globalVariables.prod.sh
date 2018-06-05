@@ -12,6 +12,8 @@ PROJECT_NAME= # Insert project name here
 export PROJECT_NAME 
 PUBLIC_DOMAIN_NAME_SUFFIX= # Application and middle tier will be accessible at $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX.trafficmanager.net
 export PUBLIC_DOMAIN_NAME_SUFFIX
+OMS_WORKSPACE_KEY = # Insert Workspace Key here
+export OMS_WORKSPACE_KEY
 
 ## -------
 # Common Azure resources resource group
