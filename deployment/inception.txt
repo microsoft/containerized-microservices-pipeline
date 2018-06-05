@@ -1,0 +1,1159 @@
++ . ./globalVariables.prod.sh
+++ set -x
+++ AZURE_SUBSCRIPTION_ID=4bfa739e-0d8c-437e-9302-e3da21c66828
+++ export AZURE_SUBSCRIPTION_ID
+++ AZURE_LOCATION=eastus
+++ export AZURE_LOCATION
+++ PROJECT_NAME=liztest
+++ export PROJECT_NAME
+++ PUBLIC_DOMAIN_NAME_SUFFIX=lizpubdomain
+++ export PUBLIC_DOMAIN_NAME_SUFFIX
+++ COMMON_RESOURCE_GROUP=liztest-eastus-resources
+++ export COMMON_RESOURCE_GROUP
+++ '[' -z 4bfa739e-0d8c-437e-9302-e3da21c66828 ']'
+++ '[' -z eastus ']'
+++ '[' -z liztest ']'
++ echo ........ Logging into Azure
+........ Logging into Azure
++ az login
+WARNING: To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code F4N2NCB84 to authenticate.
+[
+  {
+    "cloudName": "AzureCloud",
+    "id": "fb4c9e89-2410-43c8-9f08-9bde60650f1b",
+    "isDefault": false,
+    "name": "Microsoft Azure Internal Consumption",
+    "state": "Enabled",
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "user": {
+      "name": "elhalper@microsoft.com",
+      "type": "user"
+    }
+  },
+  {
+    "cloudName": "AzureCloud",
+    "id": "04f7ec88-8e28-41ed-8537-5e17766001f5",
+    "isDefault": false,
+    "name": "Strategic Engagements Developers Research",
+    "state": "Enabled",
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "user": {
+      "name": "elhalper@microsoft.com",
+      "type": "user"
+    }
+  },
+  {
+    "cloudName": "AzureCloud",
+    "id": "2f4bae45-523c-4220-b7b2-db3b8d7d2a1b",
+    "isDefault": false,
+    "name": "Commercial Software Engineering - Industry Engagements",
+    "state": "Enabled",
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "user": {
+      "name": "elhalper@microsoft.com",
+      "type": "user"
+    }
+  },
+  {
+    "cloudName": "AzureCloud",
+    "id": "d36d0808-a967-4f73-9fdc-32ea232fc81d",
+    "isDefault": false,
+    "name": "PELITTLE TEAM - CSE DWR",
+    "state": "Enabled",
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "user": {
+      "name": "elhalper@microsoft.com",
+      "type": "user"
+    }
+  },
+  {
+    "cloudName": "AzureCloud",
+    "id": "4bfa739e-0d8c-437e-9302-e3da21c66828",
+    "isDefault": true,
+    "name": "CarDataExtractor",
+    "state": "Enabled",
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "user": {
+      "name": "elhalper@microsoft.com",
+      "type": "user"
+    }
+  }
+]
++ az account set --subscription 4bfa739e-0d8c-437e-9302-e3da21c66828
++ '[' az network traffic-manager profile check-dns --name liztest.lizpubdomain --query nameAvailable = false ']'
+./inception.sh: line 23: [: too many arguments
++ echo ........ Creating resource groups
+........ Creating resource groups
++ az group delete --name=liztest-eastus-resources --yes
+ERROR: Resource group 'liztest-eastus-resources' could not be found.
++ az group create --name liztest-eastus-resources --location eastus
+{
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources",
+  "location": "eastus",
+  "managedBy": null,
+  "name": "liztest-eastus-resources",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null
+}
++ AZURE_TRAFFIC_MANAGER_PROFILE_NAME=liztest-trafficmgr
++ az network traffic-manager profile create --name liztest-trafficmgr --resource-group liztest-eastus-resources --routing-method Priority --unique-dns-name liztest.lizpubdomain
+{
+  "TrafficManagerProfile": {
+    "dnsConfig": {
+      "fqdn": "liztest.lizpubdomain.trafficmanager.net",
+      "relativeName": "liztest.lizpubdomain",
+      "ttl": 30
+    },
+    "endpoints": [],
+    "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.Network/trafficManagerProfiles/liztest-trafficmgr",
+    "location": "global",
+    "monitorConfig": {
+      "intervalInSeconds": 30,
+      "path": "/",
+      "port": 80,
+      "profileMonitorStatus": "Inactive",
+      "protocol": "HTTP",
+      "timeoutInSeconds": 10,
+      "toleratedNumberOfFailures": 3
+    },
+    "name": "liztest-trafficmgr",
+    "profileStatus": "Enabled",
+    "resourceGroup": "liztest-eastus-resources",
+    "tags": null,
+    "trafficRoutingMethod": "Priority",
+    "type": "Microsoft.Network/trafficManagerProfiles"
+  }
+}
++ K8_DEPLOYMENT_KEYVAULT_NAME=liztest-deploy-kv
++ export K8_DEPLOYMENT_KEYVAULT_NAME
++ az keyvault delete --name liztest-deploy-kv --resource-group liztest-eastus-resources
+ERROR: Operation failed with status: 204. Details: none
++ az keyvault create --name liztest-deploy-kv --resource-group liztest-eastus-resources --location eastus
+{
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.KeyVault/vaults/liztest-deploy-kv",
+  "location": "eastus",
+  "name": "liztest-deploy-kv",
+  "properties": {
+    "accessPolicies": [
+      {
+        "applicationId": null,
+        "objectId": "f99081fa-c682-4507-978d-9330dd80eb56",
+        "permissions": {
+          "certificates": [
+            "get",
+            "list",
+            "delete",
+            "create",
+            "import",
+            "update",
+            "managecontacts",
+            "getissuers",
+            "listissuers",
+            "setissuers",
+            "deleteissuers",
+            "manageissuers",
+            "recover"
+          ],
+          "keys": [
+            "get",
+            "create",
+            "delete",
+            "list",
+            "update",
+            "import",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "secrets": [
+            "get",
+            "list",
+            "set",
+            "delete",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "storage": [
+            "get",
+            "list",
+            "delete",
+            "set",
+            "update",
+            "regeneratekey",
+            "setsas",
+            "listsas",
+            "getsas",
+            "deletesas"
+          ]
+        },
+        "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+      }
+    ],
+    "createMode": null,
+    "enableSoftDelete": null,
+    "enabledForDeployment": false,
+    "enabledForDiskEncryption": null,
+    "enabledForTemplateDeployment": null,
+    "provisioningState": "RegisteringDns",
+    "sku": {
+      "name": "standard"
+    },
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "vaultUri": "https://liztest-deploy-kv.vault.azure.net"
+  },
+  "resourceGroup": "liztest-eastus-resources",
+  "tags": {},
+  "type": "Microsoft.KeyVault/vaults"
+}
++ echo ........ Creating Azure Container Registry
+........ Creating Azure Container Registry
++ . ./deployContainerRegistry.sh
+++ set -x
+++ AZURE_CONTAINER_REGISTRY_NAME=acrliztesteastus
+++ SKU=Basic
+++ az acr delete -n acrliztesteastus
+ERROR: The resource with name 'acrliztesteastus' and type 'Microsoft.ContainerRegistry/registries' could not be found in subscription 'CarDataExtractor (4bfa739e-0d8c-437e-9302-e3da21c66828)'.
+++ az acr create -n acrliztesteastus -g liztest-eastus-resources --sku Basic -l eastus --admin-enabled true
+{
+  "adminUserEnabled": true,
+  "creationDate": "2018-06-05T18:41:36.300512+00:00",
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.ContainerRegistry/registries/acrliztesteastus",
+  "location": "eastus",
+  "loginServer": "acrliztesteastus.azurecr.io",
+  "name": "acrliztesteastus",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "liztest-eastus-resources",
+  "sku": {
+    "name": "Basic",
+    "tier": "Basic"
+  },
+  "status": null,
+  "storageAccount": null,
+  "tags": {},
+  "type": "Microsoft.ContainerRegistry/registries"
+}
+++ export AZURE_CONTAINER_REGISTRY_NAME
+++ az acr show --name acrliztesteastus --query loginServer -o tsv
++ ACR_URL=acrliztesteastus.azurecr.io
+++ az acr credential show --name acrliztesteastus --query username -o tsv
++ ACR_USERNAME=acrliztesteastus
+++ az acr credential show --name acrliztesteastus --query 'passwords[0].value' -o tsv
++ ACR_PASSWORD=K=KyipTNCChPNE1HUM5=Vqty0rDvgFaf
++ git clone https://github.com/Hexadite/acs-keyvault-agent
+Cloning into 'acs-keyvault-agent'...
++ cd acs-keyvault-agent
++ docker build . -t acrliztesteastus.azurecr.io/hexadite:latest
+./inception.sh: line 58: docker: command not found
++ docker login -u acrliztesteastus -p K=KyipTNCChPNE1HUM5=Vqty0rDvgFaf acrliztesteastus.azurecr.io
+./inception.sh: line 59: docker: command not found
++ docker push acrliztesteastus.azurecr.io/hexadite:latest
+./inception.sh: line 60: docker: command not found
++ cd ..
++ rm -rf acs-keyvault-agent
++ echo ........ Creating App Insights
+........ Creating App Insights
++ . ./deployAppInsights.sh
+++ set -x
+++ INSIGHTS_NAME=liztest-app-insights
+++ az resource delete --resource-group liztest-eastus-resources --name=liztest-app-insights --resource-type microsoft.insights/components
+++ az resource create --resource-group liztest-eastus-resources --name=liztest-app-insights --resource-type microsoft.insights/components --properties '{ "kind": "Node.JS", "Application_Type": "Node.JS", "location": "eastus"}'
+{
+  "etag": "\"9500c35c-0000-0000-0000-5b16d96d0000\"",
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/microsoft.insights/components/liztest-app-insights",
+  "identity": null,
+  "kind": "Node.JS",
+  "location": "eastus",
+  "managedBy": null,
+  "name": "liztest-app-insights",
+  "plan": null,
+  "properties": {
+    "AppId": "1d83f271-2908-47b8-af82-f5f82f13bf20",
+    "ApplicationId": "liztest-app-insights",
+    "Application_Type": "Node.JS",
+    "CreationDate": "2018-06-05T18:41:49.7200302+00:00",
+    "Flow_Type": null,
+    "HockeyAppId": null,
+    "HockeyAppToken": null,
+    "InstrumentationKey": "c0bbb47a-b06a-43a0-9176-c1c3b48df61f",
+    "Name": "liztest-app-insights",
+    "PackageId": null,
+    "Request_Source": null,
+    "SamplingPercentage": null,
+    "TenantId": "4bfa739e-0d8c-437e-9302-e3da21c66828",
+    "Ver": "v2",
+    "provisioningState": "Succeeded"
+  },
+  "resourceGroup": "liztest-eastus-resources",
+  "sku": null,
+  "tags": {},
+  "type": "microsoft.insights/components"
+}
+++ echo 'Use this key in the application settings for Front End.'
+Use this key in the application settings for Front End.
+++ az resource show --resource-group liztest-eastus-resources --name=liztest-app-insights --resource-type microsoft.insights/components --query properties.InstrumentationKey -o tsv
+c0bbb47a-b06a-43a0-9176-c1c3b48df61f
++ echo ........ Creating OMS Workspace
+........ Creating OMS Workspace
++ K8_DEPLOYMENT_DIAGSA_NAME=liztestdiagsa
+++ uuidgen
++ OMS_WORKSPACE_KEY=93C7A0E0-8B47-4894-B690-052A73D9ECF6
++ echo 93C7A0E0-8B47-4894-B690-052A73D9ECF6
+93C7A0E0-8B47-4894-B690-052A73D9ECF6
++ export OMS_WORKSPACE_KEY
++ LOG_ANALYTICS_OMS_PARAMS='{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serviceTier": {
+      "value": "PerNode"
+    },
+    "workspaceName": {
+      "value": ""
+    },
+    "workspaceKey": {
+      "value": ""
+    },
+    "location": {
+      "value": "East US"
+    },
+    "applicationDiagnosticsStorageAccountName": {
+      "value": ""
+    },
+    "applicationDiagnosticsStorageAccountResourceGroup": {
+      "value": ""
+    }
+  }
+}'
+++ jq --arg workspaceName liztest-eastus-ws '.parameters.workspaceName.value=$workspaceName'
++ LOG_ANALYTICS_OMS_PARAMS='{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serviceTier": {
+      "value": "PerNode"
+    },
+    "workspaceName": {
+      "value": "liztest-eastus-ws"
+    },
+    "workspaceKey": {
+      "value": ""
+    },
+    "location": {
+      "value": "East US"
+    },
+    "applicationDiagnosticsStorageAccountName": {
+      "value": ""
+    },
+    "applicationDiagnosticsStorageAccountResourceGroup": {
+      "value": ""
+    }
+  }
+}'
+++ jq --arg storageAccountName liztestdiagsa '.parameters.applicationDiagnosticsStorageAccountName.value=$storageAccountName'
++ LOG_ANALYTICS_OMS_PARAMS='{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serviceTier": {
+      "value": "PerNode"
+    },
+    "workspaceName": {
+      "value": "liztest-eastus-ws"
+    },
+    "workspaceKey": {
+      "value": ""
+    },
+    "location": {
+      "value": "East US"
+    },
+    "applicationDiagnosticsStorageAccountName": {
+      "value": "liztestdiagsa"
+    },
+    "applicationDiagnosticsStorageAccountResourceGroup": {
+      "value": ""
+    }
+  }
+}'
+++ jq --arg resourceGroup liztest-eastus-resources '.parameters.applicationDiagnosticsStorageAccountResourceGroup.value=$resourceGroup'
++ LOG_ANALYTICS_OMS_PARAMS='{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serviceTier": {
+      "value": "PerNode"
+    },
+    "workspaceName": {
+      "value": "liztest-eastus-ws"
+    },
+    "workspaceKey": {
+      "value": ""
+    },
+    "location": {
+      "value": "East US"
+    },
+    "applicationDiagnosticsStorageAccountName": {
+      "value": "liztestdiagsa"
+    },
+    "applicationDiagnosticsStorageAccountResourceGroup": {
+      "value": "liztest-eastus-resources"
+    }
+  }
+}'
+++ jq --arg workspaceKey 93C7A0E0-8B47-4894-B690-052A73D9ECF6 '.parameters.workspaceKey.value=$workspaceKey'
++ LOG_ANALYTICS_OMS_PARAMS='{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serviceTier": {
+      "value": "PerNode"
+    },
+    "workspaceName": {
+      "value": "liztest-eastus-ws"
+    },
+    "workspaceKey": {
+      "value": "93C7A0E0-8B47-4894-B690-052A73D9ECF6"
+    },
+    "location": {
+      "value": "East US"
+    },
+    "applicationDiagnosticsStorageAccountName": {
+      "value": "liztestdiagsa"
+    },
+    "applicationDiagnosticsStorageAccountResourceGroup": {
+      "value": "liztest-eastus-resources"
+    }
+  }
+}'
++ echo '{' '"$schema":' '"https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",' '"contentVersion":' '"1.0.0.0",' '"parameters":' '{' '"serviceTier":' '{' '"value":' '"PerNode"' '},' '"workspaceName":' '{' '"value":' '"liztest-eastus-ws"' '},' '"workspaceKey":' '{' '"value":' '"93C7A0E0-8B47-4894-B690-052A73D9ECF6"' '},' '"location":' '{' '"value":' '"East' 'US"' '},' '"applicationDiagnosticsStorageAccountName":' '{' '"value":' '"liztestdiagsa"' '},' '"applicationDiagnosticsStorageAccountResourceGroup":' '{' '"value":' '"liztest-eastus-resources"' '}' '}' '}'
++ az storage account delete --name liztestdiagsa --resource-group liztest-eastus-resources --yes
++ az storage account create --name liztestdiagsa --resource-group liztest-eastus-resources --location eastus --sku Standard_LRS
+{
+  "accessTier": null,
+  "creationTime": "2018-06-05T18:41:55.913876+00:00",
+  "customDomain": null,
+  "enableHttpsTrafficOnly": false,
+  "encryption": {
+    "keySource": "Microsoft.Storage",
+    "keyVaultProperties": null,
+    "services": {
+      "blob": {
+        "enabled": true,
+        "lastEnabledTime": "2018-06-05T18:41:56.148222+00:00"
+      },
+      "file": {
+        "enabled": true,
+        "lastEnabledTime": "2018-06-05T18:41:56.148222+00:00"
+      },
+      "queue": null,
+      "table": null
+    }
+  },
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.Storage/storageAccounts/liztestdiagsa",
+  "identity": null,
+  "kind": "Storage",
+  "lastGeoFailoverTime": null,
+  "location": "eastus",
+  "name": "liztestdiagsa",
+  "networkRuleSet": {
+    "bypass": "AzureServices",
+    "defaultAction": "Allow",
+    "ipRules": [],
+    "virtualNetworkRules": []
+  },
+  "primaryEndpoints": {
+    "blob": "https://liztestdiagsa.blob.core.windows.net/",
+    "file": "https://liztestdiagsa.file.core.windows.net/",
+    "queue": "https://liztestdiagsa.queue.core.windows.net/",
+    "table": "https://liztestdiagsa.table.core.windows.net/"
+  },
+  "primaryLocation": "eastus",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "liztest-eastus-resources",
+  "secondaryEndpoints": null,
+  "secondaryLocation": null,
+  "sku": {
+    "capabilities": null,
+    "kind": null,
+    "locations": null,
+    "name": "Standard_LRS",
+    "resourceType": null,
+    "restrictions": null,
+    "tier": "Standard"
+  },
+  "statusOfPrimary": "available",
+  "statusOfSecondary": null,
+  "tags": {},
+  "type": "Microsoft.Storage/storageAccounts"
+}
++ az group deployment delete --resource-group liztest-eastus-resources --name Microsoft.LogAnalyticsOMS
++ az group deployment create --resource-group liztest-eastus-resources --name Microsoft.LogAnalyticsOMS --template-file logAnalyticsOms.json --parameters @logAnalyticsOms.parameters.temp.json
+{
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.Resources/deployments/Microsoft.LogAnalyticsOMS",
+  "name": "Microsoft.LogAnalyticsOMS",
+  "properties": {
+    "correlationId": "5e56e7e1-a5c1-4d33-a46e-6e8ace818f2c",
+    "debugSetting": null,
+    "dependencies": [
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/savedSearches/VMSS Queries2",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/VMSS Queries2",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/savedSearches"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleWindowsEvent1",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/sampleWindowsEvent1",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/datasources"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleWindowsPerfCounter1",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/sampleWindowsPerfCounter1",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/datasources"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleIISLog1",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/sampleIISLog1",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/datasources"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleSyslog1",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/sampleSyslog1",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/datasources"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleSyslogCollection1",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/sampleSyslogCollection1",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/datasources"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleLinuxPerf1",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/sampleLinuxPerf1",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/datasources"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleLinuxPerfCollection1",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/sampleLinuxPerfCollection1",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/datasources"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          },
+          {
+            "actionName": "listKeys",
+            "apiVersion": "2015-06-15",
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.Storage/storageAccounts/liztestdiagsa",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztestdiagsa",
+            "resourceType": "Microsoft.Storage/storageAccounts"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/storageinsightconfigs/liztestdiagsaliztest-eastus-ws",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "liztest-eastus-ws/liztestdiagsaliztest-eastus-ws",
+        "resourceType": "Microsoft.OperationalInsights/workspaces/storageinsightconfigs"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationsManagement/solutions/Updates(liztest-eastus-ws)",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "Updates(liztest-eastus-ws)",
+        "resourceType": "Microsoft.OperationsManagement/solutions"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationsManagement/solutions/AntiMalware(liztest-eastus-ws)",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "AntiMalware(liztest-eastus-ws)",
+        "resourceType": "Microsoft.OperationsManagement/solutions"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+            "resourceGroup": "liztest-eastus-resources",
+            "resourceName": "liztest-eastus-ws",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationsManagement/solutions/SQLAssessment(liztest-eastus-ws)",
+        "resourceGroup": "liztest-eastus-resources",
+        "resourceName": "SQLAssessment(liztest-eastus-ws)",
+        "resourceType": "Microsoft.OperationsManagement/solutions"
+      }
+    ],
+    "duration": "PT40.9951325S",
+    "mode": "Incremental",
+    "outputResources": [
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleIISLog1",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleLinuxPerf1",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleLinuxPerfCollection1",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleSyslog1",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleSyslogCollection1",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleWindowsEvent1",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/datasources/sampleWindowsPerfCounter1",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/savedSearches/VMSS Queries2",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationalInsights/workspaces/liztest-eastus-ws/storageinsightconfigs/liztestdiagsaliztest-eastus-ws",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationsManagement/solutions/AntiMalware(liztest-eastus-ws)",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationsManagement/solutions/SQLAssessment(liztest-eastus-ws)",
+        "resourceGroup": "liztest-eastus-resources"
+      },
+      {
+        "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.OperationsManagement/solutions/Updates(liztest-eastus-ws)",
+        "resourceGroup": "liztest-eastus-resources"
+      }
+    ],
+    "outputs": {
+      "customerId": {
+        "type": "String",
+        "value": "53c1a69e-fe01-4730-84c1-a24ff64497f4"
+      },
+      "portalUrl": {
+        "type": "String",
+        "value": "https://eus.mms.microsoft.com/Account?tenant=72f988bf-86f1-41af-91ab-2d7cd011db47&resource=%2fsubscriptions%2f4bfa739e-0d8c-437e-9302-e3da21c66828%2fresourcegroups%2fliztest-eastus-resources%2fproviders%2fmicrosoft.operationalinsights%2fworkspaces%2fliztest-eastus-ws"
+      },
+      "pricingTier": {
+        "type": "String",
+        "value": "pernode"
+      },
+      "provisioningState": {
+        "type": "String",
+        "value": "Succeeded"
+      },
+      "retentionInDays": {
+        "type": "Int",
+        "value": 30
+      },
+      "source": {
+        "type": "String",
+        "value": "Azure"
+      },
+      "workspaceKey": {
+        "type": "String",
+        "value": "93C7A0E0-8B47-4894-B690-052A73D9ECF6"
+      },
+      "workspaceName": {
+        "type": "String",
+        "value": "liztest-eastus-ws"
+      }
+    },
+    "parameters": {
+      "applicationDiagnosticsStorageAccountName": {
+        "type": "String",
+        "value": "liztestdiagsa"
+      },
+      "applicationDiagnosticsStorageAccountResourceGroup": {
+        "type": "String",
+        "value": "liztest-eastus-resources"
+      },
+      "dataRetention": {
+        "type": "Int",
+        "value": 30
+      },
+      "location": {
+        "type": "String",
+        "value": "East US"
+      },
+      "serviceTier": {
+        "type": "String",
+        "value": "PerNode"
+      },
+      "workspaceKey": {
+        "type": "String",
+        "value": "93C7A0E0-8B47-4894-B690-052A73D9ECF6"
+      },
+      "workspaceName": {
+        "type": "String",
+        "value": "liztest-eastus-ws"
+      }
+    },
+    "parametersLink": null,
+    "providers": [
+      {
+        "id": null,
+        "namespace": "Microsoft.OperationalInsights",
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiVersions": null,
+            "locations": [
+              "eastus"
+            ],
+            "properties": null,
+            "resourceType": "workspaces"
+          },
+          {
+            "aliases": null,
+            "apiVersions": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "workspaces/savedSearches"
+          },
+          {
+            "aliases": null,
+            "apiVersions": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "workspaces/datasources"
+          },
+          {
+            "aliases": null,
+            "apiVersions": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "workspaces/storageinsightconfigs"
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.OperationsManagement",
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiVersions": null,
+            "locations": [
+              "eastus"
+            ],
+            "properties": null,
+            "resourceType": "solutions"
+          }
+        ]
+      }
+    ],
+    "provisioningState": "Succeeded",
+    "template": null,
+    "templateHash": "14532657049748634896",
+    "templateLink": null,
+    "timestamp": "2018-06-05T18:42:58.868991+00:00"
+  },
+  "resourceGroup": "liztest-eastus-resources"
+}
++ rm ./logAnalyticsOms.parameters.temp.json
++ echo ........ Creating middle tier services
+........ Creating middle tier services
++ . ./createMtSvc.sh
+++ set -x
+++ MT_SERVICE_PRINCIPAL_NAME=liztest-mt-svc
+++ az ad sp delete --id http://liztest-mt-svc
++++ az ad sp create-for-rbac --name liztest-mt-svc --role=Reader --scopes=/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources --query password -o tsv
+++ MT_SERVICE_PRINCIPAL_PASSWORD=48d4a3c5-5127-473e-80bd-4447d41b3508
+++ az keyvault secret set --name mt-aad-password --vault-name liztest-deploy-kv --description 'used by middle tier to access all Azure resources' --value 48d4a3c5-5127-473e-80bd-4447d41b3508 --query id
+"https://liztest-deploy-kv.vault.azure.net/secrets/mt-aad-password/f5778d167225408d9b4dcd4bfc8c9aef"
+++ MT_KEYVAULT_NAME=liztest-mt-svc-kv
+++ az keyvault delete --name liztest-mt-svc-kv --resource-group liztest-eastus-resources
+ERROR: Operation failed with status: 204. Details: none
+++ az keyvault create --name liztest-mt-svc-kv --resource-group liztest-eastus-resources --location eastus
+{
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.KeyVault/vaults/liztest-mt-svc-kv",
+  "location": "eastus",
+  "name": "liztest-mt-svc-kv",
+  "properties": {
+    "accessPolicies": [
+      {
+        "applicationId": null,
+        "objectId": "f99081fa-c682-4507-978d-9330dd80eb56",
+        "permissions": {
+          "certificates": [
+            "get",
+            "list",
+            "delete",
+            "create",
+            "import",
+            "update",
+            "managecontacts",
+            "getissuers",
+            "listissuers",
+            "setissuers",
+            "deleteissuers",
+            "manageissuers",
+            "recover"
+          ],
+          "keys": [
+            "get",
+            "create",
+            "delete",
+            "list",
+            "update",
+            "import",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "secrets": [
+            "get",
+            "list",
+            "set",
+            "delete",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "storage": [
+            "get",
+            "list",
+            "delete",
+            "set",
+            "update",
+            "regeneratekey",
+            "setsas",
+            "listsas",
+            "getsas",
+            "deletesas"
+          ]
+        },
+        "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+      }
+    ],
+    "createMode": null,
+    "enableSoftDelete": null,
+    "enabledForDeployment": false,
+    "enabledForDiskEncryption": null,
+    "enabledForTemplateDeployment": null,
+    "provisioningState": "RegisteringDns",
+    "sku": {
+      "name": "standard"
+    },
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "vaultUri": "https://liztest-mt-svc-kv.vault.azure.net"
+  },
+  "resourceGroup": "liztest-eastus-resources",
+  "tags": {},
+  "type": "Microsoft.KeyVault/vaults"
+}
+++ az keyvault set-policy --secret-permissions get --resource-group liztest-eastus-resources --name liztest-mt-svc-kv --spn http://liztest-mt-svc
+{
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.KeyVault/vaults/liztest-mt-svc-kv",
+  "location": "eastus",
+  "name": "liztest-mt-svc-kv",
+  "properties": {
+    "accessPolicies": [
+      {
+        "applicationId": null,
+        "objectId": "f99081fa-c682-4507-978d-9330dd80eb56",
+        "permissions": {
+          "certificates": [
+            "get",
+            "list",
+            "delete",
+            "create",
+            "import",
+            "update",
+            "managecontacts",
+            "getissuers",
+            "listissuers",
+            "setissuers",
+            "deleteissuers",
+            "manageissuers",
+            "recover"
+          ],
+          "keys": [
+            "get",
+            "create",
+            "delete",
+            "list",
+            "update",
+            "import",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "secrets": [
+            "get",
+            "list",
+            "set",
+            "delete",
+            "backup",
+            "restore",
+            "recover"
+          ],
+          "storage": [
+            "get",
+            "list",
+            "delete",
+            "set",
+            "update",
+            "regeneratekey",
+            "setsas",
+            "listsas",
+            "getsas",
+            "deletesas"
+          ]
+        },
+        "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+      },
+      {
+        "applicationId": null,
+        "objectId": "13544c20-70ac-488e-b009-b7edff8e7925",
+        "permissions": {
+          "certificates": null,
+          "keys": null,
+          "secrets": [
+            "get"
+          ],
+          "storage": null
+        },
+        "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+      }
+    ],
+    "createMode": null,
+    "enableSoftDelete": null,
+    "enabledForDeployment": false,
+    "enabledForDiskEncryption": null,
+    "enabledForTemplateDeployment": null,
+    "provisioningState": "RegisteringDns",
+    "sku": {
+      "name": "standard"
+    },
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "vaultUri": "https://liztest-mt-svc-kv.vault.azure.net/"
+  },
+  "resourceGroup": "liztest-eastus-resources",
+  "tags": {},
+  "type": "Microsoft.KeyVault/vaults"
+}
+++ SQL_ADMIN=liztest-sql-admin
++++ uuidgen
+++ SQL_ADMIN_PASSWORD=4B76DD3C-41F5-4DFA-95B3-3D1B2D0041B3
+++ SQL_SERVER_NAME=liztest
++++ uuidgen
+++ UUID=0C6C5DED-6462-48F3-AB0E-E07AF291E5C6
+++ SQL_DB_NAME=liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt
+++ az sql server create --admin-password 4B76DD3C-41F5-4DFA-95B3-3D1B2D0041B3 --admin-user liztest-sql-admin --location eastus --name liztest --resource-group liztest-eastus-resources
+{
+  "administratorLogin": "liztest-sql-admin",
+  "administratorLoginPassword": null,
+  "fullyQualifiedDomainName": "liztest.database.windows.net",
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.Sql/servers/liztest",
+  "identity": null,
+  "kind": "v12.0",
+  "location": "eastus",
+  "name": "liztest",
+  "resourceGroup": "liztest-eastus-resources",
+  "state": "Ready",
+  "tags": null,
+  "type": "Microsoft.Sql/servers",
+  "version": "12.0"
+}
+++ az sql db create --name liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt --resource-group liztest-eastus-resources --server liztest
+{
+  "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+  "collation": "SQL_Latin1_General_CP1_CI_AS",
+  "createMode": null,
+  "creationDate": "2018-06-05T18:45:05.093000+00:00",
+  "currentServiceObjectiveName": "S0",
+  "currentSku": {
+    "capacity": 10,
+    "family": null,
+    "name": "Standard",
+    "size": null,
+    "tier": "Standard"
+  },
+  "databaseId": "4deb14e4-d27d-4d43-95da-a96f80022b10",
+  "defaultSecondaryLocation": "westus",
+  "earliestRestoreDate": "2018-06-05T19:15:05.093000+00:00",
+  "edition": "Standard",
+  "elasticPoolId": null,
+  "elasticPoolName": null,
+  "failoverGroupId": null,
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.Sql/servers/liztest/databases/liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt",
+  "kind": "v12.0,user",
+  "licenseType": null,
+  "location": "eastus",
+  "longTermRetentionBackupResourceId": null,
+  "managedBy": null,
+  "maxLogSizeBytes": null,
+  "maxSizeBytes": 268435456000,
+  "name": "liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt",
+  "readScale": "Disabled",
+  "recoverableDatabaseId": null,
+  "recoveryServicesRecoveryPointId": null,
+  "requestedServiceObjectiveName": "S0",
+  "resourceGroup": "liztest-eastus-resources",
+  "restorableDroppedDatabaseId": null,
+  "restorePointInTime": null,
+  "sampleName": null,
+  "sku": {
+    "capacity": 10,
+    "family": null,
+    "name": "Standard",
+    "size": null,
+    "tier": "Standard"
+  },
+  "sourceDatabaseDeletionDate": null,
+  "sourceDatabaseId": null,
+  "status": "Online",
+  "tags": null,
+  "type": "Microsoft.Sql/servers/databases",
+  "zoneRedundant": false
+}
+++ az sql server firewall-rule create --resource-group liztest-eastus-resources --server liztest -n whitelist-internal-azure --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+{
+  "endIpAddress": "0.0.0.0",
+  "id": "/subscriptions/4bfa739e-0d8c-437e-9302-e3da21c66828/resourceGroups/liztest-eastus-resources/providers/Microsoft.Sql/servers/liztest/firewallRules/whitelist-internal-azure",
+  "kind": "v12.0",
+  "location": "East US",
+  "name": "whitelist-internal-azure",
+  "resourceGroup": "liztest-eastus-resources",
+  "startIpAddress": "0.0.0.0",
+  "type": "Microsoft.Sql/servers/firewallRules"
+}
+++ az keyvault secret set --name sql-password --vault-name liztest-mt-svc-kv --description 'used by middle tier to login to SQL' --value 4B76DD3C-41F5-4DFA-95B3-3D1B2D0041B3 --query id
+"https://liztest-mt-svc-kv.vault.azure.net/secrets/sql-password/4cb16d732d514a9f9559a50ec4f1e4a4"
++++ az sql db show-connection-string --client ado.net --auth-type SqlPassword --name liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt --server liztest
+++ MT_CONNECTION_STRING='"Server=tcp:liztest.database.windows.net,1433;Database=liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt;User ID=<username>;Password=<password>;Encrypt=true;Connection Timeout=30;"'
+++ MT_CONNECTION_STRING='"Server=tcp:liztest.database.windows.net,1433;Database=liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt;User ID=liztest-sql-admin;Password=<password>;Encrypt=true;Connection Timeout=30;"'
+++ export MT_CONNECTION_STRING
++++ uuidgen
+++ TOKEN_SIGN_KEY=58B143FD-6444-47FF-B54C-6C608C68E5A5
+++ az keyvault secret set --name token-sign-key --vault-name liztest-mt-svc-kv --description 'used by middle tier to sign tokens' --value 58B143FD-6444-47FF-B54C-6C608C68E5A5 --query id
+"https://liztest-mt-svc-kv.vault.azure.net/secrets/token-sign-key/f52dc1e9630f4414b9bbcbfa37e8c393"
++ echo ........ 'Azure resource deployment complete. All resources deployed to the following resource group.'
+........ Azure resource deployment complete. All resources deployed to the following resource group.
++ echo COMMON_RESOURCE_GROUP=liztest-eastus-resources
+COMMON_RESOURCE_GROUP=liztest-eastus-resources
++ echo ........ 'Save the following values and use them in deployCluster.sh'
+........ Save the following values and use them in deployCluster.sh
++ echo K8_DEPLOYMENT_KEYVAULT_NAME=liztest-deploy-kv
+K8_DEPLOYMENT_KEYVAULT_NAME=liztest-deploy-kv
++ echo AZURE_CONTAINER_REGISTRY_NAME=acrliztesteastus
+AZURE_CONTAINER_REGISTRY_NAME=acrliztesteastus
++ echo AZURE_TRAFFIC_MANAGER_PROFILE_NAME=liztest-trafficmgr
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME=liztest-trafficmgr
++ echo 'MT_CONNECTION_STRING="Server=tcp:liztest.database.windows.net,1433;Database=liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt;User' 'ID=liztest-sql-admin;Password=<password>;Encrypt=true;Connection' 'Timeout=30;"'
+MT_CONNECTION_STRING="Server=tcp:liztest.database.windows.net,1433;Database=liztest-0C6C5DED-6462-48F3-AB0E-E07AF291E5C6-mt;User ID=liztest-sql-admin;Password=<password>;Encrypt=true;Connection Timeout=30;"
