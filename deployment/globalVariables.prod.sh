@@ -9,7 +9,7 @@ AZURE_SUBSCRIPTION_ID= # Insert Azure Subscription ID value here
 export AZURE_SUBSCRIPTION_ID
 AZURE_LOCATION=eastus # Insert Azure Location here (westus, eastus, etc.)
 export AZURE_LOCATION
-PROJECT_NAME=
+PROJECT_NAME= # Insert project name here
 export PROJECT_NAME 
 PUBLIC_DOMAIN_NAME_SUFFIX= # Application and middle tier will be accessible at $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX.trafficmanager.net
 export PUBLIC_DOMAIN_NAME_SUFFIX
