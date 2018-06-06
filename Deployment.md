@@ -57,6 +57,15 @@ SSL_CERT_FILE_PATH
 SSL_PASSWORD
 ```
 
+It is not recommended to have .pfx certificate files without password protection but if your .pfx file is not protected with a password then do the following:
+
+- in deployCluster.sh locate 
+`az keyvault certificate import --name mt-ssl-cert --vault-name $K8_DEPLOYMENT_KEYVAULT_NAME -f $SSL_CERT_FILE_PATH --password $SSL_PASSWORD --query id`
+line and remove `--password $SSL_PASSWORD`.
+
+- In the same file find `# Validate that values have been set for required variables`. Below there is `[ -z "SSL_PASSWORD" ]` non-empty password check - remove it.
+
+
 ## Deploying a k8 cluster
 
 Multiple k8 clusters can be deployed, each in their own resource group and with their own endpoint. Each time you run [deployCluster.sh](deployment/deployCluster.sh) a new resource group will be provisioned and all resources specific for that cluster will be deployed.
