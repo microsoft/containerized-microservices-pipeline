@@ -33,12 +33,12 @@ az group create --name $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION
 
 ## -------
 # Create the Azure Traffic Manager profile
-AZURE_TRAFFIC_MANAGER_PROFILE_NAME=$PROJECT_NAME-trafficmgr
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME=$PROJECT_NAME-$RESOURCE_NAME_STRING_AZURE_TRAFFIC_MANAGER
 az network traffic-manager profile create --name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --routing-method Priority --unique-dns-name $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX
 
 ## -------
 ## Create key vault that k8 hexodite will use to get pod specific secrets
-K8_DEPLOYMENT_KEYVAULT_NAME=$PROJECT_NAME-deploy-kv
+K8_DEPLOYMENT_KEYVAULT_NAME=$PROJECT_NAME-$RESOURCE_NAME_STRING_AZURE_KEY_VAULT_DEPLOY
 export K8_DEPLOYMENT_KEYVAULT_NAME
 ! az keyvault delete --name $K8_DEPLOYMENT_KEYVAULT_NAME --resource-group $COMMON_RESOURCE_GROUP
 az keyvault create --name $K8_DEPLOYMENT_KEYVAULT_NAME --resource-group $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION
@@ -91,10 +91,10 @@ echo ........ Creating middle tier services
 . ./createMtSvc.sh
 
 ## -------
-# Azure resource creation complete, echo values that will be needed for deployCluster.sh
+# Azure resource creation complete, values for the resources created
 echo ........ "Azure resource deployment complete. All resources deployed to the following resource group."
 echo COMMON_RESOURCE_GROUP=$COMMON_RESOURCE_GROUP
-echo ........ "Save the following values and use them in deployCluster.sh"
+echo ........ "The following resources were created."
 echo K8_DEPLOYMENT_KEYVAULT_NAME=$K8_DEPLOYMENT_KEYVAULT_NAME
 echo AZURE_CONTAINER_REGISTRY_NAME=$AZURE_CONTAINER_REGISTRY_NAME
 echo AZURE_TRAFFIC_MANAGER_PROFILE_NAME=$AZURE_TRAFFIC_MANAGER_PROFILE_NAME

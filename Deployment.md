@@ -84,14 +84,6 @@ Name of the cluster (must be unique):
 CLUSTER_NAME=
 ```
 
-Use the values from inception.txt to populate the following:
-
-```shell
-AZURE_CONTAINER_REGISTRY_NAME=
-K8_DEPLOYMENT_KEYVAULT_NAME=
-AZURE_TRAFFIC_MANAGER_PROFILE_NAME=
-```
-
 ### Execute [deployCluster.sh](deployment/deployCluster.sh)
 
 Open a bash shell and execute [deployCluster.sh](deployment/deployCluster.sh)
