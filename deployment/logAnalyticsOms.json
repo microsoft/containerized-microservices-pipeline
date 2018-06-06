@@ -8,12 +8,6 @@
         "description": "workspaceName"
       }
     },
-    "workspaceKey": {
-      "type": "string",
-      "metadata": {
-        "description": "workspaceKey"
-      }
-    },
     "serviceTier": {
       "type": "string",
       "allowedValues": [
@@ -317,10 +311,6 @@
     "workspaceName": {
       "type": "string",
       "value": "[parameters('workspaceName')]"
-    },
-    "workspaceKey": {
-      "type": "string",
-      "value": "[parameters('workspaceKey')]"
     },
     "provisioningState": {
       "type": "string",

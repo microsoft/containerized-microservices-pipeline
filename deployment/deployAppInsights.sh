@@ -8,7 +8,7 @@
 # PROJECT_NAME
 ########################################
 
-#set -e # stop script execution on failure
+set -e # stop script execution on failure
 set -x
 
 INSIGHTS_NAME="$PROJECT_NAME"-app-insights

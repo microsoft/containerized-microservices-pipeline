@@ -8,7 +8,7 @@
 # PROJECT_NAME
 ########################################
 
-#set -e # stop script execution on failure
+set -e # stop script execution on failure
 set -x
 
 AZURE_CONTAINER_REGISTRY_NAME=acr$PROJECT_NAME$AZURE_LOCATION
