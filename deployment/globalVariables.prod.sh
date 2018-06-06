@@ -19,6 +19,15 @@ COMMON_RESOURCE_GROUP=$PROJECT_NAME-$AZURE_LOCATION-resources
 export COMMON_RESOURCE_GROUP
 
 ## -------
+# Resource strings used as prefix/postfix annotations in resource names
+RESOURCE_NAME_STRING_AZURE_TRAFFIC_MANAGER=trafficmgr
+export RESOURCE_NAME_STRING_AZURE_TRAFFIC_MANAGER
+RESOURCE_NAME_STRING_AZURE_CONTAINER_REGISTRY=acr
+export RESOURCE_NAME_STRING_AZURE_CONTAINER_REGISTRY
+RESOURCE_NAME_STRING_AZURE_KEY_VAULT_DEPLOY=deploy-kv
+export RESOURCE_NAME_STRING_AZURE_KEY_VAULT_DEPLOY
+
+## -------
 # Validate that values have been set for required variables
 if [ -z "$AZURE_SUBSCRIPTION_ID" ] || [ -z "$AZURE_LOCATION" ] || [ -z "$PROJECT_NAME" ]
 then

@@ -17,9 +17,9 @@ CLUSTER_NAME= # Add Desired Cluster Name
 
 ## -------
 # Get values for Azure resources created by inception.sh
-AZURE_CONTAINER_REGISTRY_NAME=$(az acr list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep acr)
-K8_DEPLOYMENT_KEYVAULT_NAME=$(az keyvault list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep deploy-kv)
-AZURE_TRAFFIC_MANAGER_PROFILE_NAME=$(az network traffic-manager profile list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep trafficmgr)
+AZURE_CONTAINER_REGISTRY_NAME=$(az acr list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep $RESOURCE_NAME_STRING_AZURE_CONTAINER_REGISTRY)
+K8_DEPLOYMENT_KEYVAULT_NAME=$(az keyvault list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep $RESOURCE_NAME_STRING_AZURE_KEY_VAULT_DEPLOY)
+AZURE_TRAFFIC_MANAGER_PROFILE_NAME=$(az network traffic-manager profile list -g $COMMON_RESOURCE_GROUP -o tsv --query [].name | grep $RESOURCE_NAME_STRING_AZURE_TRAFFIC_MANAGER)
 
 ## -------
 # SSL certificate data
