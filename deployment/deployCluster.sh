@@ -154,12 +154,6 @@ helm install ./charts/traefik --wait --name traefik-ingress-controller --set dep
 AZURE_PUBLIC_IP=$(az network public-ip list -g $RESOURCE_GROUP --query "[?tags.service=='kube-system/traefik-ingress-service'].ipAddress" -o tsv)
 az network traffic-manager endpoint create --name $CLUSTER_NAME --profile-name $AZURE_TRAFFIC_MANAGER_PROFILE_NAME --resource-group $COMMON_RESOURCE_GROUP --type externalEndpoints --target $AZURE_PUBLIC_IP --priority 1
 
-## ------
-## OMS Agent
-WSID=$(az resource show --resource-group loganalyticsrg --resource-type Microsoft.OperationalInsights/workspaces --name containerized-loganalyticsWS | grep customerId | sed -e 's/.*://')
-#helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=$KEYVAL stable/msoms
-# TODO: populate $KEYVAL parameter
-
 ## -------
 # ACS cluster deployment and setup complete
 echo ........ "ACS cluster deployment and setup complete. All resources deployed to the following resource group."
