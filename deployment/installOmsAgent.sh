@@ -20,5 +20,5 @@ OMS_WORKSPACE_KEY= # Workspace Key associated with your OMS Workspace
 
 ## ------
 ## OMS Agent
-WSID=$(az resource show --resource-group $COMMON_RESOURCE_GROUP --resource-type Microsoft.OperationalInsights/workspaces --name $PROJECT_NAME-$AZURE_LOCATION-ws | grep customerId | sed -e 's/.*://')
+WSID=$(az resource show --resource-group $COMMON_RESOURCE_GROUP --resource-type Microsoft.OperationalInsights/workspaces --name $PROJECT_NAME-$AZURE_LOCATION-ws --query properties.customerId -o tsv)
 helm install --name omsagent --set omsagent.secret.wsid=$WSID --set omsagent.secret.key=$OMS_WORKSPACE_KEY stable/msoms --namespace kube-system
