@@ -31,10 +31,8 @@ Additionally, the OMS Agent must be installed on the cluster.
 4. Run `installOmsAgent.sh`
 
 ## Add solutions to your Log Analytics workspace:
-1. In the Azure portal, select Create a resource > Monitoring + Management > See all.
-2. To the right of Management Solutions, click More.
-3. In the Management Solutions blade, select a management solution that you want to add to a workspace.
-4. In the management solution blade, review information about the management solution, and then click Create.
-5. In the management solution name blade, select a workspace that you want to associate with the management solution.
-6. Optionally, change workspace settings for the Azure subscription, resource group, and location. You can also choose Automation options. Click Create.
-To start using the management solution that you've added to your workspace, navigate to Log Analytics > Subscriptions > workspace name > Overview. A new tile for your management solution is displayed. Click the tile to open it and start using the solution after data for the solution is gathered.
+1. In the Azure portal, select Create a resource > Management Tools > See all.
+2. In the Management Tools blade, select a management solution that you want to add to a workspace. For the purposes of this project, we recommend the Container Monitoring Solution.
+3. In the specific solution blade, review information about the management solution, and then click Create.
+4. In the management solution name blade, select a workspace that you want to associate with the management solution.
+5. To start using the management solution that you've added to your workspace, navigate to Log Analytics > workspace name > Overview. A new tile for your management solution is displayed. Click the tile to open it and start using the solution after data for the solution is gathered.
