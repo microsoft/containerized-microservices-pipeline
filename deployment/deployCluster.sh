@@ -83,12 +83,16 @@ CLUSTER_DEFINITION=$(jq --arg ssh_pub_key_data "$SSH_PUB_KEY_DATA" '.properties.
 echo $CLUSTER_DEFINITION > clusterDefinition.temp.json
 echo Updated cluster definition json file
 
+ACS_OUTPUT_DIR="./_output/$DNS_PREFIX-$AZURE_LOCATION"
+
 # deploy Kubernetes cluster with acs-engine
 echo Starting deployment of Kubernetes cluster using acs-engine
 acs-engine deploy \
     --subscription-id $AZURE_SUBSCRIPTION_ID \
     --resource-group $RESOURCE_GROUP  \
     --location $AZURE_LOCATION \
+    --output-directory $ACS_OUTPUT_DIR \
+    --force-overwrite \
     --api-model ./clusterDefinition.temp.json
 echo Completed deployment of Kubernetes cluster
 
