@@ -12,6 +12,8 @@ set -e # stop script execution on failure
 set -x
 
 AZURE_CONTAINER_REGISTRY_NAME=$PROJECT_NAME$AZURE_LOCATION$RESOURCE_NAME_STRING_AZURE_CONTAINER_REGISTRY
+# Find/replace '-' because ACR name doesn't allow it
+AZURE_CONTAINER_REGISTRY_NAME="${AZURE_CONTAINER_REGISTRY_NAME//-/}"
 SKU=Basic # Basic, Premium, Standard
 
 ## -------
