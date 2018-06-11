@@ -70,6 +70,8 @@ echo ........ Creating App Insights
 # Create OMS Workspace
 echo ........ Creating OMS Workspace
 K8_DEPLOYMENT_DIAGSA_NAME="${PROJECT_NAME}diagsa"
+# Storage account creation will fail if the name contains '-'. Find and replace with blank
+K8_DEPLOYMENT_DIAGSA_NAME="${K8_DEPLOYMENT_DIAGSA_NAME//-/}"
 
 # Generate log analytics parameters file
 LOG_ANALYTICS_OMS_PARAMS=$(<logAnalyticsOms.parameters.json)
