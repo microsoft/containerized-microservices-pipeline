@@ -94,7 +94,7 @@ An example cross platform middle tier api is provided as part of the solution, i
 
 [Continuous integration/deployment](ContinuousIntegrationAndDeployment.md)
 
-## Log Analyticss
+## Log Analytics
 
 [Integrating Log Analytics](deployment/LogAnalytics.md)
 
