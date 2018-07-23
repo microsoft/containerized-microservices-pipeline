@@ -20,7 +20,7 @@ az account set --subscription $AZURE_SUBSCRIPTION_ID
 
 ## -------
 # Make sure DNS name is available for Azure Traffic Manager, if not, exit
-if [ az network traffic-manager profile check-dns --name $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX --query nameAvailable = "false" ]; then
+if [ $(az network traffic-manager profile check-dns --name $PROJECT_NAME.$PUBLIC_DOMAIN_NAME_SUFFIX --query nameAvailable) = "false" ]; then
     echo "!!!DNS name $PROJECT_NAME is not available in Azure Traffic Manager - exiting!!!"
     exit 1
 fi
