@@ -102,7 +102,7 @@ rm ./clusterDefinition.temp.json
 ## -------
 ## Set Kubernetes Credentials and show cluster information
 
-KUBE_RESOURCES_PATH=_output/$CLUSTER_NAME
+KUBE_RESOURCES_PATH=$ACS_OUTPUT_DIR
 KUBE_USER=$CLUSTER_NAME-admin
 
 # Set cluster
