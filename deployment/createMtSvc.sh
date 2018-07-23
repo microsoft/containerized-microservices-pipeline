@@ -13,14 +13,14 @@ set -e # stop script execution on failure
 set -x
 
 MT_SERVICE_PRINCIPAL_NAME=$PROJECT_NAME-mt-svc
-az ad sp delete --id http://$MT_SERVICE_PRINCIPAL_NAME
+! az ad sp delete --id http://$MT_SERVICE_PRINCIPAL_NAME
 MT_SERVICE_PRINCIPAL_PASSWORD=`az ad sp create-for-rbac --name $MT_SERVICE_PRINCIPAL_NAME --role=Reader --scopes="/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$COMMON_RESOURCE_GROUP" --query password -o tsv`
 
 az keyvault secret set --name mt-aad-password --vault-name $K8_DEPLOYMENT_KEYVAULT_NAME --description "used by middle tier to access all Azure resources" --value $MT_SERVICE_PRINCIPAL_PASSWORD --query id
 
 # MT specific secrets
 MT_KEYVAULT_NAME=$PROJECT_NAME-mt-svc-kv
-az keyvault delete --name $MT_KEYVAULT_NAME --resource-group $COMMON_RESOURCE_GROUP
+! az keyvault delete --name $MT_KEYVAULT_NAME --resource-group $COMMON_RESOURCE_GROUP
 az keyvault create --name $MT_KEYVAULT_NAME --resource-group $COMMON_RESOURCE_GROUP --location $AZURE_LOCATION
 
 az keyvault set-policy --secret-permissions get --resource-group $COMMON_RESOURCE_GROUP --name $MT_KEYVAULT_NAME --spn http://$MT_SERVICE_PRINCIPAL_NAME
