@@ -18,6 +18,6 @@ SKU=Basic # Basic, Premium, Standard
 
 ## -------
 ## create acr
-az acr delete -n $AZURE_CONTAINER_REGISTRY_NAME
+! az acr delete -n $AZURE_CONTAINER_REGISTRY_NAME
 az acr create -n $AZURE_CONTAINER_REGISTRY_NAME -g $COMMON_RESOURCE_GROUP --sku $SKU -l $AZURE_LOCATION --admin-enabled true
 export AZURE_CONTAINER_REGISTRY_NAME
