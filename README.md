@@ -73,6 +73,10 @@ An example cross platform middle tier api is provided as part of the solution, i
     - [Download and install ACS Engine](https://github.com/Azure/acs-engine/blob/master/docs/acsengine.md#install)
 
 7. JQ
+    - Install JQ on Mac with Homebrew
+        ```bash
+        brew install jq
+        ```
     - [Download and install JQ](https://stedolan.github.io/jq/download/)
 8. Visual Studio
 	- Will be used for editing and executing web and load tests. There's an option to run the tests locally or in the cloud through VSTS. Web and load tests examples found [here](https://github.com/Microsoft/containerized-microservices-pipeline/tree/master/WebAndLoadTests).
